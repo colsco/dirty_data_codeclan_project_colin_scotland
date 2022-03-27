@@ -54,11 +54,11 @@ particular species had 11247 sightings.
 ```{r}
 birds_clean %>% 
   
-  group_by(common_name, 
-         scientific_name, 
-         species_abbreviation) %>% 
+  group_by(common_name, scientific_name, species_abbreviation) %>% 
   
-  summarise(common_name = n())
+  summarise(total_count = sum(count)) %>% 
+  
+  arrange(desc(total_count))
 
 
 ```
