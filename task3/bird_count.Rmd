@@ -141,12 +141,6 @@ anti_join(solo_birds, flock_birds, by = "common_name")
 This shows that there were 26 bird species that were **only** ever sighted as 
 solitary birds.
 
-*Note - using `species_common_name_taxon_age_sex_plumage_phase` returned a higher count,
-but some of these included multiple entries for the same species with only age or plumage
-differences.  Using `species_base` tidies this up. 
-
-
-
 
 ```{r}
 birds_clean %>% 
