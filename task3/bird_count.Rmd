@@ -100,6 +100,7 @@ birds_clean %>%
 The bird with the highest total count above latitude -30 was the *Wedge-tailed shearwater*, 
 *Puffinus pacificus* or PUFPAC, with a total count of 855.
 
+
 #### How many different types of birds were only ever seen in groups of 1?
 
 i.e. how many species of birds were **only** ever seen alone.  One way to work this out would be
