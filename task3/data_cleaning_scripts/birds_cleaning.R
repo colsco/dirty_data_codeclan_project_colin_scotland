@@ -5,6 +5,7 @@
 library(tidyverse)
 library(janitor)
 library(readxl)
+library(assertr)
 
 # set the working directory for simpler path names ----
 
@@ -39,12 +40,6 @@ birds_joined <- inner_join(bird_record, ship_record, by = "record_id")
 
 names(birds_joined)
 
-# column rename ----
-# There's still columns here called 'record.x' and 'record.y' which don't comply with our accepted style;
-
-birds_joined <- birds_joined %>% 
-  rename(record_x = record.x, record_y = record.y)
-
 # remove unnecessary columns ----
 # There are a lot of columns in here that are unlikely to be needed in the analysis;
 
@@ -55,9 +50,8 @@ birds_joined <- birds_joined %>%
 # The time column also contains unnecessary (and misleading) date information which needs to be tidied.
 # All entries are currently prefixed with 1899-12-31;
 
-#birds_joined <- 
   birds_joined <- birds_joined %>% 
-  mutate(time =  str_remove(time, "1899-12-31 "))
+  mutate(time = str_remove(time, "1899-12-31 "))
   
 # check for lingerers;
   
@@ -65,7 +59,31 @@ birds_joined <- birds_joined %>%
     summarise(sum(str_detect(time, "1899-12-31")))
 
 # there are no more instances of 1899-12-31 and the 'time' column looks a lot more sensible.
-
+  
+# clean up 'date'----
+  
+  birds_joined <- birds_joined %>% 
+    mutate(date = str_remove(date, " 00:00:00"))
+  
+  # check for lingerers;
+  
+  birds_joined %>% 
+    summarise(sum(str_detect(date, " 00:00:00")))
+  
+# check 'counts' ----
+  
+  birds_joined %>% 
+    slice_max(count, n = 10)
+  
+# Looks like there are a lot of very high counts (such as 99999);
+  
+  birds_max_count <-   birds_joined %>% 
+    filter(count >= 10000)
+  
+# The high-count birds are Shearwaters and Prions, both of which are abundant 
+# and nest in large colonies, so there may be good reason not to discount them at this stage.
+  
+  
 # check for NAs ----
 # Now that the columns have been stripped back to those of particular interest, how many NAs are here;
 
@@ -86,14 +104,13 @@ na_birds_joined <- birds_joined %>%
 
 na_birds_joined
 
-# There are still many missing values in the 'count' column, which would seem important;
+# There are many missing values in the 'count' column, which would seem important;
 
-#na_count_col <- 
+
 na_count_col <- birds_joined %>% 
   filter(is.na(count)) %>% 
   arrange(species_common_name_taxon_age_sex_plumage_phase)
 
-# View(na_count_col)
 
 # There are 2007 NAs in 'count', out of a total of over 48,000 rows.  We would not be able
 # to impute counts with any degree of accuracy, so the best course of action would be to 
@@ -112,7 +129,7 @@ na_birds_joined_no_na <- birds_joined_no_na %>%
 birds_joined_no_na %>% 
   filter(is.na(species_scientific_name_taxon_age_sex_plumage_phase))
 
-# Scientific names are missing in these cases because the *exact* sub-species
+# Some scientific names are missing in these cases because the *exact* sub-species
 # of a particular bird was not identified at the time.
 
 # These could be left as NA for now, and any bird identification analysis can be done
@@ -122,6 +139,60 @@ birds_joined_no_na %>%
 # bird identification and count values, so could still be used for numerical
 # analysis where location is not necessary.
 
-# Save this as a clean data object;
+# clean up 'species' ----
+
+#Some species names have been extended to include plumage information, meaning that
+#trying to group_by species might result in one species having more than one row.
+#It might make future life easier if we create a species column that doesn't 
+#try to take plumage into account.
+
+#With a new column;
+#birds_joined_no_na <- birds_joined_no_na %>% 
+#  mutate(.before = species_common_name_taxon_age_sex_plumage_phase,
+#         species_base = str_remove(species_common_name_taxon_age_sex_plumage_phase, 
+#                                   " [A-Z]* [A-Z]*$|[A-Z]*[0-9]*$"))
+####################################################################################
+birds_joined_no_na <- birds_joined_no_na %>% 
+  mutate(species_common_name_taxon_age_sex_plumage_phase
+         = str_remove(species_common_name_taxon_age_sex_plumage_phase, 
+                      " [A-Z]*[0-9]*$"))
+# Need to do the same replacement in the scientific name and abbreviation columns 
+# to allow easier grouping by species later on;
+
+birds_joined_no_na <- birds_joined_no_na %>% 
+  mutate(species_scientific_name_taxon_age_sex_plumage_phase
+       = str_remove(species_scientific_name_taxon_age_sex_plumage_phase, 
+                        " [A-Z]*[0-9]*$"))
+
+birds_joined_no_na <- birds_joined_no_na %>% 
+  mutate(species_abbreviation
+         = str_remove(species_abbreviation, " [A-Z]*[0-9]*$"))
+
+
+# latitude longitude check ----
+# check for valid latitude and longitude values; 
+# latitude should be between +/- 90
+# longitude between +/- 180
+
+birds_joined_no_na %>% 
+  filter(!is.na(lat)) %>% 
+  verify(lat >= -90 & lat <= 90) 
+
+birds_joined_no_na %>% 
+  filter(!is.na(long)) %>% 
+  verify(long >= -180 & long <= 180)
+
+# So all lat/long values that are not NAs are valid 
+
+# column rename ----
+# Some columns could be renamed to make them a bit friendlier;
+
+birds_joined_no_na <- birds_joined_no_na %>% 
+  rename(common_name = species_common_name_taxon_age_sex_plumage_phase,
+         scientific_name = species_scientific_name_taxon_age_sex_plumage_phase) 
+
+
+
+# Save this as a clean data object ----
 
 birds_clean <- birds_joined_no_na

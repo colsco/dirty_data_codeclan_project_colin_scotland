@@ -1,0 +1,172 @@
+---
+title: "Bird Count Analysis"
+author: "Colin Scotland"
+date: "26/03/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+
+
+here::here()
+```
+
+```{r}
+source("data_cleaning_scripts/birds_cleaning.R")
+```
+
+### Analysis
+
+For each question where we ask for bird names, give the bird’s common name, scientific name and species abbreviation.
+
+#### Which bird had the most individual sightings? 
+
+```{r}
+# Group the results by common_name;
+  
+sightings <- birds_clean %>% 
+  
+  group_by(common_name, scientific_name, species_abbreviation) %>% 
+  
+  summarise(sight_count = n()) %>% 
+  
+  arrange(desc(sight_count))
+  
+
+  
+
+  
+  
+```
+
+The bird with the most sightings was the *Wandering albatross sensu lato*, scientific 
+name *Diomedea antipodensis / exulans* with species abbreviation *DIOANTEXU*.  This
+particular species had 11247 sightings.
+
+#### Which bird had the highest total count?
+
+```{r}
+birds_clean %>% 
+  
+  group_by(common_name, 
+         scientific_name, 
+         species_abbreviation) %>% 
+  
+  summarise(common_name = n())
+
+
+```
+
+The bird with the highest total count is the *Short-tailed shearwater, Puffinus tenuirostris*,
+or *PUFTEN* with a total count of 982553.
+
+###### NOTE:
+It was noted within the cleaning process that some species had very high counts of 99,999.
+
+Further research, specifically on *Puffinus tenuirostris* showed that they did indeed exist 
+in very large colonies, possibly exceeding 99,999 birds in multiple locations 
+(see: *http://www.marineornithology.org/PDF/24/24_1.pdf*).  This report suggests 
+that some protected areas off Tasmania hold well over 1 million nest burrows, so the result
+above could actually be significantly lower than the true figure.
+
+With this information it seemed prudent to keep the 99,999 values unchanged, with an 
+assumption that this was the upper limit of the count that could be recorded at any one time.
+
+--------------------------------------------------------------------------------
+
+
+#### Which bird had the highest total count above a latitude of -30?
+
+```{r}
+birds_clean %>% 
+  
+  filter(lat > -30) %>% 
+  
+  group_by(common_name, 
+           scientific_name, 
+           species_abbreviation) %>% 
+  
+  summarise(total_count = sum(count)) %>% 
+  
+  arrange(desc(total_count))
+```
+
+The bird with the highest total count above latitude -30 was the *Wedge-tailed shearwater*, 
+*Puffinus pacificus* or PUFPAC, with a total count of 855.
+
+#### How many different types of birds were only ever seen in groups of 1?
+
+i.e. how many species of birds were **only** ever seen alone.  One way to work this out would be
+to generate a list of all the birds with a count of 1, then generate a list with a count > 1
+and to `anti_join` the two data sets so that any matches in species were removed.  Any remaining
+counts > 1 could then be removed using `filter()`.
+
+```{r}
+solo_birds <- birds_clean %>% 
+  
+  filter(count == 1) %>% 
+  
+  group_by(common_name) %>% 
+  
+  summarise()
+  
+```
+
+```{r}
+flock_birds <- birds_clean %>% 
+  
+  filter(count > 1) %>% 
+  
+  group_by(common_name) %>% 
+  
+  summarise()
+```
+
+Now that the two lists have been generated they should be joined in such a way that 
+only those birds from `solo_birds` that are **not** in `flock_birds` are returned.
+
+An `anti_join` will keep values in 'x' that do not have a match in 'y';
+
+```{r}
+anti_join(solo_birds, flock_birds, by = "common_name")
+```
+
+This shows that there were 26 bird species that were **only** ever sighted as 
+solitary birds.
+
+*Note - using `species_common_name_taxon_age_sex_plumage_phase` returned a higher count,
+but some of these included multiple entries for the same species with only age or plumage
+differences.  Using `species_base` tidies this up. 
+
+
+
+
+```{r}
+birds_clean %>% 
+  distinct(common_name) %>% 
+  arrange(common_name)
+```
+
+###why does arctic skua still have AD/SUBAD suffixes...?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### How many penguins were seen? (Hint: there are many types of penguin)
