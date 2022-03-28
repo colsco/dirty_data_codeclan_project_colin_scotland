@@ -49,30 +49,60 @@ class(candy_2017)
 
 # Full join should create 9349 rows
 
+
+# time format 2017 ----
 # Looks like the 2017 'internal_id' might be a time value in the wrong format;
 
 candy_2017 <- candy_2017 %>% 
   
-  mutate(timestamp = as.POSIXct(internal_id, tz = "", origin="2014-10-31"), .before = "internal_id")
+  mutate(timestamp = as.POSIXct(internal_id, tz = "", origin="2014-10-31"), .before = "internal_id") %>% 
+  
+  select(!contains("internal_id"))
 
-# Now all data can be joined into one data set.  Each data set contains information
-# from a different year, so there will be no 'matches'.  A full join can be used to 
-# retain all rows.
+# column names ----
 
-join_15_16 <- full_join(candy_2015, candy_2016, by = c("timestamp"))
+# There are differences between the column names in each file.  The could do with some standardisation.
 
-join_15_16_17 <- full_join(join_15_16, candy_2017, by = "timestamp")
+# First, find out which column names differ between 2015 and 2016;
+# second%>%select(which(!(colnames(second) %in% colnames(first)))
 
-# Check we have the expected no. rows:
+candy_2016 %>% 
+  select(which(!colnames(candy_2016) %in% colnames(candy_2015)))
 
-glimpse(join_15_16_17)
+# 30 columns have different names.  It looks like there's no gender column in 2015;
 
+  "(?i)gender" %in% colnames(candy_2015)
+  
+  "(?i)sex" %in% colnames(candy_2015)
 
-#Rows: 9,349 Columns: 366 ; row count looks good, however column names look like they could be better!
+  # Both the above return false, so there isn't a gender question in 2015.  If it can be 
+  # applied across all three data sets then it doesn't provide much analytical value here;
+  
+  candy_2016 <- candy_2016 %>% 
+    select(!contains("gender"))
+  
+  candy_2017 <- candy_2017 %>% 
+    select(!contains("gender"))
+  
+  # There are also numerous columns in 2015 and 2016 asking about peoples' perception of 
+  # themselves against various famous people.  These don't provide us with any grounds 
+  # for analysis in the context of Halloween sweets.  The questions are all phrased 
+  # in terms of 'degrees_of_separation' and can be removed;
+  
+  candy_2015 <- candy_2015 %>% 
+    select(!contains("_of_separation"))
+  
+  candy_2016 <- candy_2016 %>% 
+    select(!contains("_of_separation"))
+  
+  # There are also some unnecessary questions regarding opinions on oter topics
+  # unrelated to sweets.  These often start 'please_...' and can be removed.
+  
+  candy_2015 <- candy_2015 %>% 
+    select(!contains("please_"))
+  
+  candy_2016 <- candy_2016 %>% 
+    select(!contains("please_"))
 
-
-# Looks like the time data in 2017 might be inaccurate, but time is not important
-# in the context of our analysis.
-
-
-
+  
+  
