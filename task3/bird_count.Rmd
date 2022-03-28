@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(here)
+library(data.table)
 
 
 here::here()
@@ -25,7 +26,7 @@ source("data_cleaning_scripts/birds_cleaning.R")
 
 For each question where we ask for bird names, give the bird’s common name, scientific name and species abbreviation.
 
-#### Which bird had the most individual sightings? 
+#### 1. Which bird had the most individual sightings? 
 
 ```{r}
 # Group the results by common_name;
@@ -49,7 +50,7 @@ The bird with the most sightings was the *Wandering albatross sensu lato*, scien
 name *Diomedea antipodensis / exulans* with species abbreviation *DIOANTEXU*.  This
 particular species had 11247 sightings.
 
-#### Which bird had the highest total count?
+#### 2. Which bird had the highest total count?
 
 ```{r}
 birds_clean %>% 
@@ -81,7 +82,7 @@ assumption that this was the upper limit of the count that could be recorded at 
 --------------------------------------------------------------------------------
 
 
-#### Which bird had the highest total count above a latitude of -30?
+#### 3. Which bird had the highest total count above a latitude of -30?
 
 ```{r}
 birds_clean %>% 
@@ -101,12 +102,11 @@ The bird with the highest total count above latitude -30 was the *Wedge-tailed s
 *Puffinus pacificus* or PUFPAC, with a total count of 855.
 
 
-#### How many different types of birds were only ever seen in groups of 1?
+#### 4. How many different types of birds were only ever seen in groups of 1?
 
-i.e. how many species of birds were **only** ever seen alone.  One way to work this out would be
+i.e. how many species of birds were **only** ever seen alone.  One way to determine this would be
 to generate a list of all the birds with a count of 1, then generate a list with a count > 1
-and to `anti_join` the two data sets so that any matches in species were removed.  Any remaining
-counts > 1 could then be removed using `filter()`.
+and to `anti_join` the two data sets so that any matches in species were removed.  
 
 ```{r}
 solo_birds <- birds_clean %>% 
@@ -129,7 +129,7 @@ flock_birds <- birds_clean %>%
   summarise()
 ```
 
-Now that the two lists have been generated they should be joined in such a way that 
+The two lists have now been generated; they should be joined in such a way that 
 only those birds from `solo_birds` that are **not** in `flock_birds` are returned.
 
 An `anti_join` will keep values in 'x' that do not have a match in 'y';
@@ -138,30 +138,50 @@ An `anti_join` will keep values in 'x' that do not have a match in 'y';
 anti_join(solo_birds, flock_birds, by = "common_name")
 ```
 
-This shows that there were 26 bird species that were **only** ever sighted as 
-solitary birds.
+
+This suggests that there were 26 bird species that were **only** ever sighted as 
+solitary birds, *but* there  are still some capitlised suffixes on some common names 
+here which could be missed during the anti-join, so re-run the regex again; 
+
+```{r}
+solo_birds <- solo_birds %>% 
+  
+  mutate(common_name = str_remove(common_name, "\\s[A-Z]*[0-9]*$"))
+
+flock_birds <- flock_birds %>% 
+  
+  mutate(common_name = str_remove(common_name, "\\s[A-Z]*[0-9]*$"))
+```
+
+...and redo the anti-join;
+
+```{r}
+anti_join(solo_birds, flock_birds, by = "common_name")
+```
+
+This suggests there are **23 species** that were **only** ever seen in solitude.
+
+
+#### 5. How many penguins were seen? (Hint: there are many types of penguin)
 
 
 ```{r}
+pattern <- " *[Pp]+[Ee]+[Nn]+[Gg]+[Uu]+[Ii]+[Nn] *"
+
+
 birds_clean %>% 
-  distinct(common_name) %>% 
-  arrange(common_name)
+  
+  filter(common_name %like% pattern) %>% 
+  
+  group_by(common_name) %>% 
+  
+  summarise(total_penguins_by_species = sum(count)) %>% 
+  
+  summarise(sum(total_penguins_by_species))
+  
+  
+
 ```
 
-###why does arctic skua still have AD/SUBAD suffixes...?
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#### How many penguins were seen? (Hint: there are many types of penguin)
+In total **158 penguins** were recorded.

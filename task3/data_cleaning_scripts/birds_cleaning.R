@@ -155,18 +155,21 @@ birds_joined_no_na %>%
 birds_joined_no_na <- birds_joined_no_na %>% 
   mutate(species_common_name_taxon_age_sex_plumage_phase
          = str_remove(species_common_name_taxon_age_sex_plumage_phase, 
-                      " [A-Z]*[0-9]*$"))
+                      "\\s[A-Z]*[0-9]*$"))
+
+#"\\s[A-Z]*[0-9]*$"))
+
 # Need to do the same replacement in the scientific name and abbreviation columns 
 # to allow easier grouping by species later on;
 
 birds_joined_no_na <- birds_joined_no_na %>% 
   mutate(species_scientific_name_taxon_age_sex_plumage_phase
        = str_remove(species_scientific_name_taxon_age_sex_plumage_phase, 
-                        " [A-Z]*[0-9]*$"))
+                        "\\s[A-Z]*[0-9]*$"))
 
 birds_joined_no_na <- birds_joined_no_na %>% 
   mutate(species_abbreviation
-         = str_remove(species_abbreviation, " [A-Z]*[0-9]*$"))
+         = str_remove(species_abbreviation, "\\s[A-Z]*[0-9]*$"))
 
 
 # latitude longitude check ----
