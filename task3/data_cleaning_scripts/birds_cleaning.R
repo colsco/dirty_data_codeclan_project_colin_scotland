@@ -198,4 +198,5 @@ birds_joined_no_na <- birds_joined_no_na %>%
 
 # Save this as a clean data object ----
 
-birds_clean <- birds_joined_no_na
+birds_clean <- birds_joined_no_na %>%
+  write_csv("clean_data/birds_clean.csv")

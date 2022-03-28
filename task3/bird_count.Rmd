@@ -31,7 +31,7 @@ For each question where we ask for bird names, give the bird’s common name, sc
 ```{r}
 # Group the results by common_name;
   
-sightings <- birds_clean %>% 
+birds_clean %>% 
   
   group_by(common_name, scientific_name, species_abbreviation) %>% 
   
@@ -169,13 +169,17 @@ This suggests there are **23 species** that were **only** ever seen in solitude.
 pattern <- " *[Pp]+[Ee]+[Nn]+[Gg]+[Uu]+[Ii]+[Nn] *"
 
 
-birds_clean %>% 
+penguins_by_species <- birds_clean %>% 
   
   filter(common_name %like% pattern) %>% 
   
   group_by(common_name) %>% 
   
-  summarise(total_penguins_by_species = sum(count)) %>% 
+  summarise(total_penguins_by_species = sum(count))
+
+penguins_by_species
+
+penguins_by_species %>% 
   
   summarise(sum(total_penguins_by_species))
   

@@ -183,6 +183,16 @@ pre code {
 <pre class="r"><code>library(here)</code></pre>
 <pre><code>## Warning: package &#39;here&#39; was built under R version 4.1.3</code></pre>
 <pre><code>## here() starts at C:/Users/colin/Documents/CodeClan/dirty_data_codeclan_project_colin_scotland/task3</code></pre>
+<pre class="r"><code>library(data.table)</code></pre>
+<pre><code>## Warning: package &#39;data.table&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;data.table&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     between, first, last</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     transpose</code></pre>
 <pre class="r"><code>here::here()</code></pre>
 <pre><code>## [1] &quot;C:/Users/colin/Documents/CodeClan/dirty_data_codeclan_project_colin_scotland/task3&quot;</code></pre>
 <pre class="r"><code>source(&quot;data_cleaning_scripts/birds_cleaning.R&quot;)</code></pre>
@@ -253,84 +263,202 @@ pre code {
 <h3>Analysis</h3>
 <p>For each question where we ask for bird names, give the bird’s common name, scientific name and species abbreviation.</p>
 <div id="which-bird-had-the-most-individual-sightings" class="section level4">
-<h4>Which bird had the most individual sightings?</h4>
-<pre class="r"><code>individual_sightings &lt;- birds_clean %&gt;% 
+<h4>1. Which bird had the most individual sightings?</h4>
+<pre class="r"><code># Group the results by common_name;
   
-  count(species_common_name_taxon_age_sex_plumage_phase, 
-         species_scientific_name_taxon_age_sex_plumage_phase, 
-         species_abbreviation)
+birds_clean %&gt;% 
   
-  individual_sightings %&gt;% 
-    
-    arrange(desc(n))</code></pre>
-<pre><code>## # A tibble: 318 x 4
-##    species_common_name_taxon_age_sex_pl~ species_scienti~ species_abbrevi~     n
-##    &lt;chr&gt;                                 &lt;chr&gt;            &lt;chr&gt;            &lt;int&gt;
-##  1 Wandering albatross sensu lato PL2    Diomedea antipo~ DIOANTEXU PL2     3099
-##  2 Cape petrel                           Daption capense  DAPCAP            2891
-##  3 Wandering albatross sensu lato PL3    Diomedea antipo~ DIOANTEXU PL3     2878
-##  4 Grey-faced petrel                     Pterodroma macr~ PTEMACGOU         2595
-##  5 Giant petrel sensu lato               Macronectes sp.  MACSP             2091
-##  6 Prion (unidentified)                  Pachyptila sp    PACSP             2051
-##  7 Wandering albatross sensu lato PL1    Diomedea antipo~ DIOANTEXU PL1     1816
-##  8 Black-browed albatross sensu lato AD  Diomedea impavi~ DIOIMPMEL AD      1707
-##  9 Wandering albatross sensu lato PL4    Diomedea antipo~ DIOANTEXU PL4     1472
-## 10 Sooty shearwater                      Puffinus griseus PUFGRI            1346
-## # ... with 308 more rows</code></pre>
-<p>The bird with the most sightings was the <em>Wandering albatross sensu lato PL2</em>, scientific name <em>Diomedea antipodensis / exulans PL2</em> with species abbreviation <em>DIOANTEXU PL2</em>. This particular species had 3099 sightings.</p>
+  group_by(common_name, scientific_name, species_abbreviation) %&gt;% 
+  
+  summarise(sight_count = n()) %&gt;% 
+  
+  arrange(desc(sight_count))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;common_name&#39;, &#39;scientific_name&#39;. You can
+## override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 161 x 4
+## # Groups:   common_name, scientific_name [161]
+##    common_name                      scientific_name species_abbrevi~ sight_count
+##    &lt;chr&gt;                            &lt;chr&gt;           &lt;chr&gt;                  &lt;int&gt;
+##  1 Wandering albatross sensu lato   Diomedea antip~ DIOANTEXU              11247
+##  2 Black-browed albatross sensu la~ Diomedea impav~ DIOIMPMEL               3284
+##  3 Cape petrel                      Daption capense DAPCAP                  2891
+##  4 Grey-faced petrel                Pterodroma mac~ PTEMACGOU               2595
+##  5 Giant petrel sensu lato          Macronectes sp. MACSP                   2165
+##  6 Prion (unidentified)             Pachyptila sp   PACSP                   2051
+##  7 Australasian gannet              Morus serrator  MORSER                  1642
+##  8 Southern black-backed gull       Larus dominica~ LARDOM                  1526
+##  9 Shy / white-capped / Salvin&#39;s /~ Thalassarche c~ THACAUSALERE            1397
+## 10 Sooty shearwater                 Puffinus grise~ PUFGRI                  1346
+## # ... with 151 more rows</code></pre>
+<p>The bird with the most sightings was the <em>Wandering albatross sensu lato</em>, scientific name <em>Diomedea antipodensis / exulans</em> with species abbreviation <em>DIOANTEXU</em>. This particular species had 11247 sightings.</p>
 </div>
 <div id="which-bird-had-the-highest-total-count" class="section level4">
-<h4>Which bird had the highest total count?</h4>
+<h4>2. Which bird had the highest total count?</h4>
 <pre class="r"><code>birds_clean %&gt;% 
   
-  select(species_common_name_taxon_age_sex_plumage_phase, 
-         species_scientific_name_taxon_age_sex_plumage_phase, 
-         species_abbreviation, count) %&gt;% 
-  
-  group_by(species_common_name_taxon_age_sex_plumage_phase, 
-         species_scientific_name_taxon_age_sex_plumage_phase, 
-         species_abbreviation) %&gt;% 
+  group_by(common_name, scientific_name, species_abbreviation) %&gt;% 
   
   summarise(total_count = sum(count)) %&gt;% 
   
   arrange(desc(total_count))</code></pre>
-<pre><code>## `summarise()` has grouped output by
-## &#39;species_common_name_taxon_age_sex_plumage_phase&#39;,
-## &#39;species_scientific_name_taxon_age_sex_plumage_phase&#39;. You can override using
-## the `.groups` argument.</code></pre>
-<pre><code>## # A tibble: 318 x 4
-## # Groups:   species_common_name_taxon_age_sex_plumage_phase,
-## #   species_scientific_name_taxon_age_sex_plumage_phase [318]
-##    species_common_name_taxon_age_~ species_scienti~ species_abbrevi~ total_count
+<pre><code>## `summarise()` has grouped output by &#39;common_name&#39;, &#39;scientific_name&#39;. You can
+## override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 161 x 4
+## # Groups:   common_name, scientific_name [161]
+##    common_name                     scientific_name  species_abbrevi~ total_count
 ##    &lt;chr&gt;                           &lt;chr&gt;            &lt;chr&gt;                  &lt;dbl&gt;
 ##  1 Short-tailed shearwater         Puffinus tenuir~ PUFTEN                982553
 ##  2 Prion (unidentified)            Pachyptila sp    PACSP                 326499
 ##  3 Sooty shearwater                Puffinus griseus PUFGRI                174329
 ##  4 Fluttering shearwater           Puffinus gavia   PUFGAV                113333
 ##  5 Buller&#39;s shearwater             Puffinus bulleri PUFBUL                 64750
-##  6 Cape petrel                     Daption capense  DAPCAP                 25790
-##  7 Australasian gannet AD          Morus serrator ~ MORSER AD              20701
-##  8 Little shearwater               Puffinus assimi~ PUFASS                 17428
-##  9 Short-tailed / Sooty shearwater Puffinus tenuir~ PUFTENGRI              13529
-## 10 Fairy prion                     Pachyptila turt~ PACTUR                 13315
-## # ... with 308 more rows</code></pre>
+##  6 Australasian gannet             Morus serrator   MORSER                 27040
+##  7 Cape petrel                     Daption capense  DAPCAP                 25790
+##  8 Wandering albatross sensu lato  Diomedea antipo~ DIOANTEXU              19905
+##  9 Little shearwater               Puffinus assimi~ PUFASS                 17428
+## 10 Short-tailed / Sooty shearwater Puffinus tenuir~ PUFTENGRI              13529
+## # ... with 151 more rows</code></pre>
 <p>The bird with the highest total count is the <em>Short-tailed shearwater, Puffinus tenuirostris</em>, or <em>PUFTEN</em> with a total count of 982553.</p>
 <div id="note" class="section level6">
 <h6>NOTE:</h6>
 <p>It was noted within the cleaning process that some species had very high counts of 99,999.</p>
-<p>Further research, specifically on <em>Puffinus tenuirostris</em> mentioned above, showed that they did indeed exist in very large colonies, possibly exceeding 99,999 birds in multiple locations (see: <em><a href="http://www.marineornithology.org/PDF/24/24_1.pdf" class="uri">http://www.marineornithology.org/PDF/24/24_1.pdf</a></em>). This report suggests that some protected areas off Tasmania hold well over 1 million nest burrows, so the result above could actually be significantly lower than the true figure.</p>
-<p>With this information it seemed prudent to keep the 99,999 values unchanged, on the assumption that this was the upper limit of the count that could be recorded at any one time.</p>
+<p>Further research, specifically on <em>Puffinus tenuirostris</em> showed that they did indeed exist in very large colonies, possibly exceeding 99,999 birds in multiple locations (see: <em><a href="http://www.marineornithology.org/PDF/24/24_1.pdf" class="uri">http://www.marineornithology.org/PDF/24/24_1.pdf</a></em>). This report suggests that some protected areas off Tasmania hold well over 1 million nest burrows, so the result above could actually be significantly lower than the true figure.</p>
+<p>With this information it seemed prudent to keep the 99,999 values unchanged, with an assumption that this was the upper limit of the count that could be recorded at any one time.</p>
 <hr />
 </div>
 </div>
 <div id="which-bird-had-the-highest-total-count-above-a-latitude-of--30" class="section level4">
-<h4>Which bird had the highest total count above a latitude of -30?</h4>
+<h4>3. Which bird had the highest total count above a latitude of -30?</h4>
+<pre class="r"><code>birds_clean %&gt;% 
+  
+  filter(lat &gt; -30) %&gt;% 
+  
+  group_by(common_name, 
+           scientific_name, 
+           species_abbreviation) %&gt;% 
+  
+  summarise(total_count = sum(count)) %&gt;% 
+  
+  arrange(desc(total_count))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;common_name&#39;, &#39;scientific_name&#39;. You can
+## override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 19 x 4
+## # Groups:   common_name, scientific_name [19]
+##    common_name                      scientific_name species_abbrevi~ total_count
+##    &lt;chr&gt;                            &lt;chr&gt;           &lt;chr&gt;                  &lt;dbl&gt;
+##  1 Wedge-tailed shearwater          Puffinus pacif~ PUFPAC                   855
+##  2 Australasian gannet              Morus serrator  MORSER                   105
+##  3 Crested tern                     Sterna bergii   STEBER                    83
+##  4 Pomarine skua                    Stercorarius p~ STEPOM                    19
+##  5 Noddy (unidentified)             Anous sp        ANOSP                     18
+##  6 Short-tailed shearwater          Puffinus tenui~ PUFTEN                    17
+##  7 Red-billed gull                  Larus novaehol~ LARNOV                    14
+##  8 Cape petrel                      Daption capense DAPCAP                    12
+##  9 Flesh-footed shearwater          Puffinus carne~ PUFCAR                    12
+## 10 Brown booby                      Sula leucogast~ SULLEU                     9
+## 11 Wandering albatross sensu lato   Diomedea antip~ DIOANTEXU                  8
+## 12 Great frigatebird                Fregata minor   FREMIN                     4
+## 13 Booby (unidentified)             Sula sp         SULUNI                     3
+## 14 Fluttering / Hutton&#39;s shearwater Puffinus gavia~ PUFGAVHUT                  3
+## 15 Grey-faced petrel                Pterodroma mac~ PTEMACGOU                  3
+## 16 Providence petrel                Pterodroma sol~ PTESOL                     1
+## 17 Streaked shearwater              Calonectris le~ CALLEU                     1
+## 18 Tahiti petrel                    Pseudobulweria~ PSEROS                     1
+## 19 White-bellied storm petrel       Fregetta grall~ FREGRA                     1</code></pre>
+<p>The bird with the highest total count above latitude -30 was the <em>Wedge-tailed shearwater</em>, <em>Puffinus pacificus</em> or PUFPAC, with a total count of 855.</p>
 </div>
 <div id="how-many-different-types-of-birds-were-only-ever-seen-in-groups-of-1" class="section level4">
-<h4>How many different types of birds were only ever seen in groups of 1?</h4>
+<h4>4. How many different types of birds were only ever seen in groups of 1?</h4>
+<p>i.e. how many species of birds were <strong>only</strong> ever seen alone. One way to determine this would be to generate a list of all the birds with a count of 1, then generate a list with a count &gt; 1 and to <code>anti_join</code> the two data sets so that any matches in species were removed.</p>
+<pre class="r"><code>solo_birds &lt;- birds_clean %&gt;% 
+  
+  filter(count == 1) %&gt;% 
+  
+  group_by(common_name) %&gt;% 
+  
+  summarise()</code></pre>
+<pre class="r"><code>flock_birds &lt;- birds_clean %&gt;% 
+  
+  filter(count &gt; 1) %&gt;% 
+  
+  group_by(common_name) %&gt;% 
+  
+  summarise()</code></pre>
+<p>The two lists have now been generated; they should be joined in such a way that only those birds from <code>solo_birds</code> that are <strong>not</strong> in <code>flock_birds</code> are returned.</p>
+<p>An <code>anti_join</code> will keep values in ‘x’ that do not have a match in ‘y’;</p>
+<pre class="r"><code>anti_join(solo_birds, flock_birds, by = &quot;common_name&quot;)</code></pre>
+<pre><code>## # A tibble: 26 x 1
+##    common_name                           
+##    &lt;chr&gt;                                 
+##  1 Arctic skua AD                        
+##  2 Atlantic yellow-nosed mollymawk       
+##  3 Audubon&#39;s shearwater                  
+##  4 Barau&#39;s petrel                        
+##  5 Black-faced cormorant                 
+##  6 Black / Westland petrel               
+##  7 Bulwer&#39;s petrel                       
+##  8 Caspian tern                          
+##  9 Crested penguin (unidentified)        
+## 10 Flesh-footed / Wedge-tailed shearwater
+## # ... with 16 more rows</code></pre>
+<p>This suggests that there were 26 bird species that were <strong>only</strong> ever sighted as solitary birds, <em>but</em> there are still some capitlised suffixes on some common names here which could be missed during the anti-join, so re-run the regex again;</p>
+<pre class="r"><code>solo_birds &lt;- solo_birds %&gt;% 
+  
+  mutate(common_name = str_remove(common_name, &quot;\\s[A-Z]*[0-9]*$&quot;))
+
+flock_birds &lt;- flock_birds %&gt;% 
+  
+  mutate(common_name = str_remove(common_name, &quot;\\s[A-Z]*[0-9]*$&quot;))</code></pre>
+<p>…and redo the anti-join;</p>
+<pre class="r"><code>anti_join(solo_birds, flock_birds, by = &quot;common_name&quot;)</code></pre>
+<pre><code>## # A tibble: 23 x 1
+##    common_name                           
+##    &lt;chr&gt;                                 
+##  1 Atlantic yellow-nosed mollymawk       
+##  2 Audubon&#39;s shearwater                  
+##  3 Barau&#39;s petrel                        
+##  4 Black-faced cormorant                 
+##  5 Black / Westland petrel               
+##  6 Bulwer&#39;s petrel                       
+##  7 Caspian tern                          
+##  8 Crested penguin (unidentified)        
+##  9 Flesh-footed / Wedge-tailed shearwater
+## 10 Frigatebird (unidentified)            
+## # ... with 13 more rows</code></pre>
+<p>This suggests there are <strong>23 species</strong> that were <strong>only</strong> ever seen in solitude.</p>
 </div>
 <div id="how-many-penguins-were-seen-hint-there-are-many-types-of-penguin" class="section level4">
-<h4>How many penguins were seen? (Hint: there are many types of penguin)</h4>
+<h4>5. How many penguins were seen? (Hint: there are many types of penguin)</h4>
+<pre class="r"><code>pattern &lt;- &quot; *[Pp]+[Ee]+[Nn]+[Gg]+[Uu]+[Ii]+[Nn] *&quot;
+
+
+penguins_by_species &lt;- birds_clean %&gt;% 
+  
+  filter(common_name %like% pattern) %&gt;% 
+  
+  group_by(common_name) %&gt;% 
+  
+  summarise(total_penguins_by_species = sum(count))
+
+penguins_by_species</code></pre>
+<pre><code>## # A tibble: 7 x 2
+##   common_name                    total_penguins_by_species
+##   &lt;chr&gt;                                              &lt;dbl&gt;
+## 1 Adelie penguin                                        27
+## 2 Crested penguin (unidentified)                         1
+## 3 Emperor penguin                                       18
+## 4 Fiordland crested penguin                             15
+## 5 Little penguin                                        90
+## 6 Penguin (unidentified)                                 4
+## 7 Yellow-eyed penguin                                    3</code></pre>
+<pre class="r"><code>penguins_by_species %&gt;% 
+  
+  summarise(sum(total_penguins_by_species))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `sum(total_penguins_by_species)`
+##                              &lt;dbl&gt;
+## 1                              158</code></pre>
+<p>In total <strong>158 penguins</strong> were recorded.</p>
 </div>
 </div>
 
