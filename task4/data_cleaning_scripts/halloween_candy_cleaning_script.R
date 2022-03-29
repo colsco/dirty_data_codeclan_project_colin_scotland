@@ -30,6 +30,7 @@ names(candy_2015)
 str(candy_2015)
 glimpse(candy_2015)
 class(candy_2015)
+dim(candy_2015)
 
 head(candy_2016)
 names(candy_2016)
@@ -59,50 +60,71 @@ candy_2017 <- candy_2017 %>%
   
   select(!contains("internal_id"))
 
-# column names ----
 
-# There are differences between the column names in each file.  The could do with some standardisation.
+# parse the junk: 2015 ----
 
-# First, find out which column names differ between 2015 and 2016;
-# second%>%select(which(!(colnames(second) %in% colnames(first)))
+removals <- c("please_", 
+              "_separation_",
+              "fill_in_the_blank", 
+              "guess_the_number",
+              "betty_or_veronica",
+              "check_all_that_apply",
+              "that_dress_that_went_viral",
+              "your_favourite_font",
+              "squint_really_hard",
+              "which_day_do_you_prefer",
+              "vicodin",                         # vicodin is an opioid
+              "person_of_interest",
+              "pencils",
+              "bonkers_the_board_game",
+              "bottle_caps",
+              "cash_",
+              "creepy_religious",
+              "dental_",
+              "acetaminophen",
+              "glow_stick",
+              "healthy_fruit",
+              "physical_hugs",
+              "joy_joy_mit_iodine",              # from the Simpsons...
+              "kale_smoothie",
+              "trail_mix",
+              "do_you_eat_apples",
+              "whole_wheat",
+              "white_bread",
+              "vials_of_pure_high_fructose",
+              "q7_",
+              "q8_",
+              "q9_",
+              "q10_",
+              "q11_",
+              "q12_",
+              "coordinates",
+              "x114",
+              "chardonnay"
+              )
 
-candy_2016 %>% 
-  select(which(!colnames(candy_2016) %in% colnames(candy_2015)))
+candy_2015 <- candy_2015 %>% 
+  select(!contains(removals))
+         
+# parse the junk 2016 ----
 
-# 30 columns have different names.  It looks like there's no gender column in 2015;
+candy_2016 <- candy_2016 %>% 
+  select(!contains(removals))
 
-  "(?i)gender" %in% colnames(candy_2015)
-  
-  "(?i)sex" %in% colnames(candy_2015)
+# parse the junk 2017 ----
 
-  # Both the above return false, so there isn't a gender question in 2015.  If it can be 
-  # applied across all three data sets then it doesn't provide much analytical value here;
-  
-  candy_2016 <- candy_2016 %>% 
-    select(!contains("gender"))
-  
-  candy_2017 <- candy_2017 %>% 
-    select(!contains("gender"))
-  
-  # There are also numerous columns in 2015 and 2016 asking about peoples' perception of 
-  # themselves against various famous people.  These don't provide us with any grounds 
-  # for analysis in the context of Halloween sweets.  The questions are all phrased 
-  # in terms of 'degrees_of_separation' and can be removed;
-  
-  candy_2015 <- candy_2015 %>% 
-    select(!contains("_of_separation"))
-  
-  candy_2016 <- candy_2016 %>% 
-    select(!contains("_of_separation"))
-  
-  # There are also some unnecessary questions regarding opinions on oter topics
-  # unrelated to sweets.  These often start 'please_...' and can be removed.
-  
-  candy_2015 <- candy_2015 %>% 
-    select(!contains("please_"))
-  
-  candy_2016 <- candy_2016 %>% 
-    select(!contains("please_"))
+candy_2017 <- candy_2017 %>% 
+  select(!contains(removals))
 
-  
-  
+# dim summary after parsing ----
+
+# 2015: 5630 rows x 81 columns
+# 2016: 1259 rows x 87 columns
+# 2017: 2460 rows x 90 columns
+
+# 2017 colnames cleanup
+
+candy_2017 <- candy_2017 %>% 
+  rename_all(~ str_replace(., regex("^[Qq][0-9]_"), ""))
+
+
