@@ -100,7 +100,15 @@ removals <- c("please_",
               "q12_",
               "coordinates",
               "x114",
-              "chardonnay"
+              "chardonnay",
+              "gender",
+              "state_province_county",
+              "abstained",
+              "real_housewives",
+              "ignore",
+              "lapel_pins",
+              "chalk",
+              "mint_leaves"
               )
 
 candy_2015 <- candy_2015 %>% 
@@ -119,12 +127,88 @@ candy_2017 <- candy_2017 %>%
 # dim summary after parsing ----
 
 # 2015: 5630 rows x 81 columns
-# 2016: 1259 rows x 87 columns
-# 2017: 2460 rows x 90 columns
+# 2016: 1259 rows x 85 columns
+# 2017: 2460 rows x 88 columns
 
 # 2017 colnames cleanup
 
 candy_2017 <- candy_2017 %>% 
   rename_all(~ str_replace(., regex("^[Qq][0-9]_"), ""))
 
+# mutate 'timestamp' --> 'year' ----
 
+candy_2015 <- candy_2015 %>% 
+  mutate(year = year(timestamp), .before = "timestamp") %>% 
+  select(!timestamp)
+
+candy_2016 <- candy_2016 %>% 
+  mutate(year = year(timestamp), .before = "timestamp") %>% 
+  select(!timestamp)
+
+candy_2017 <- candy_2017 %>% 
+  mutate(year = year(timestamp), .before = "timestamp") %>% 
+  select(!timestamp)
+
+# start renaming columns to ease join ---- 
+
+# 2015 and 2016 have the most similar column names, so start there.  Standardise column order;
+
+candy_2016 <- candy_2016 %>% 
+  relocate(how_old_are_you, .after = "year") %>% 
+  rename("bonkers" = "bonkers_the_candy") %>% 
+  rename("box_o_raisins" = "boxo_raisins") %>% 
+  rename("sweetums" = "sweetums_a_friend_to_diabetes")
+
+candy_2015 <- candy_2015 %>% 
+  relocate(butterfinger, .after = "box_o_raisins") %>% 
+  relocate(caramellos, .before = "chiclets")
+
+# 2015 <--> 2016 join ----
+
+# Will they join now?
+
+#compare_df_cols(candy_2015, candy_2016)
+
+# Looks like a join will be possible.  Use full_join to keep all data.
+
+candy_15_16_full <- full_join(candy_2015, candy_2016)
+
+# rename columns for 2017 join ----
+
+candy_15_16_full <- candy_15_16_full %>% 
+  rename("going_out" = "are_you_going_actually_going_trick_or_treating_yourself") %>% 
+  rename("age" = "how_old_are_you")
+
+candy_15_16_full <- candy_15_16_full %>% 
+  relocate("which_country_do_you_live_in", .after = "age") %>% 
+  rename("country" = "which_country_do_you_live_in")
+
+candy_2017 <- candy_2017 %>% 
+  relocate("age", .after = "year") %>% 
+  relocate("country", .after = "age") %>% 
+  rename("")
+          
+# Will they join now?
+
+#compare_df_cols(candy_15_16_full, candy_2017)
+
+# not too far away
+
+candy_2017 <- candy_2017 %>% 
+  rename("brown_globs" = "anonymous_brown_globs_that_come_in_black_and_orange_wrappers_a_k_a_mary_janes") %>% 
+  rename("x100_grand_bar" = "100_grand_bar") %>% 
+  rename("bonkers" = "bonkers_the_candy") %>% 
+  rename("box_o_raisins" = "boxo_raisins") %>% 
+  rename("sweetums" = "sweetums_a_friend_to_diabetes")
+
+candy_15_16_full <- candy_15_16_full %>% 
+  rename("brown_globs" = "anonymous_brown_globs_that_come_in_black_and_orange_wrappers")
+
+
+# compare_df_cols(candy_15_16_full, candy_2017)
+
+# final join ----
+
+# full join again to keep all data
+
+candy_all <- full_join(candy_15_16_full, candy_2017)
