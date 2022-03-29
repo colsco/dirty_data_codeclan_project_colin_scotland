@@ -45,7 +45,7 @@ candy_long <- candy_all %>%
 
 
 
-candy_long <- candy_long %>% 
+candy_long_ratings <- candy_long %>% 
   
   mutate(num_ratings = if_else(value == "(?i)JOY" |
                                value == "(?i)MEH" |
@@ -53,11 +53,44 @@ candy_long <- candy_long %>%
   
   summarise(total_ratings = sum(!is.na(num_ratings)))
 
-candy_long
+candy_long_ratings
   
 ```
 
-#### There are **612266** ratings of sweets across the three years.
+#### There are **612266** ratings of sweets across the three years.  
+
+These can also be broken down further to show how many of each type there were;
+
+```{r}
+candy_long %>% 
+  
+  select(value) %>% 
+  
+  distinct(value)
+  
+```
+
+So there are only "JOY", "DESPAIR", "MEH" and NAs to deal with.
+
+```{r}
+candy_long <- candy_long %>% 
+  
+ # select(name, value) %>% 
+  
+  mutate(joy = (if_else(value == "JOY", 1, 0)), 
+         despair = (if_else(value == "DESPAIR", 1, 0)), 
+         meh = (if_else(value == "MEH", 1, 0)), 
+         .after = "value") 
+
+candy_long %>% 
+  
+  summarise(sum(joy, na.rm = TRUE), sum(despair, na.rm = TRUE), sum(meh, na.rm = TRUE))
+
+
+```
+
+Double check the count: 275261 + 260569 + 76436 = **612266**, which matches the original answer.
+
 
 ## 2.  What was the average age of people who are going out trick or treating?
 
@@ -120,4 +153,45 @@ candy_all %>%
 
 #### The average age of people going out trick or treating is just under **39 years and 2 months**.
 
-## 4. 
+## 4. For each joy, despair and meh, which candy bar received the most of these ratings?
+
+
+```{r}
+
+candy_rating_rates <- candy_long %>% 
+  
+  group_by(name, joy, meh, despair) %>% 
+  
+  summarise(all_the_joy = sum(as.integer(joy, na.rm = TRUE)), 
+            all_the_meh = sum(as.integer(meh, na.rm = TRUE)), 
+            all_the_despair = sum(as.integer(despair, na.rm = TRUE))
+            )
+
+candy_rating_rates %>% 
+  
+  select(name, all_the_joy) %>% 
+  
+  arrange(desc(all_the_joy))
+  
+candy_rating_rates %>% 
+  
+  select(name, all_the_meh) %>% 
+  
+  arrange(desc(all_the_meh))
+
+candy_rating_rates %>% 
+  
+  select(name, all_the_despair) %>% 
+  
+  arrange(desc(all_the_despair))
+ 
+  
+```
+
+The candy bar with the most ratings of each kind were;
+
+**JOY**: Any full sized candy bar with 7589 votes
+
+**MEH**: Lollipops with 1570 votes
+
+**DESPAIR**: Gum from baseball cards with 7341 votes

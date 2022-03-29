@@ -219,7 +219,15 @@ candy_all <- full_join(candy_15_16_full, candy_2017)
 
 # NAs ----
  
- na_candy_all <- candy_all %>% 
+candy_all %>% 
    summarise(across(.fns = ~sum(is.na(.x))))
+ 
+ rm(candy_15_16_full)
+ 
+ rm(candy_2015)
+ 
+ rm(candy_2016)
+ 
+ rm(candy_2017)
 
 
