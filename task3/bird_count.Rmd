@@ -140,7 +140,7 @@ anti_join(solo_birds, flock_birds, by = "common_name")
 
 
 This suggests that there were 26 bird species that were **only** ever sighted as 
-solitary birds, *but* there  are still some capitlised suffixes on some common names 
+solitary birds, *but* there  are still some capitalised suffixes on some common names 
 here which could be missed during the anti-join, so re-run the regex again; 
 
 ```{r}
