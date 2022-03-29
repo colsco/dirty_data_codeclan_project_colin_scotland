@@ -208,3 +208,5 @@ select(name, all_the_despair) %>%
 
 #### There were **1990 votes of 'despair'** for Starburst.
 
+## 6. What was the most popular candy bar by this rating system for each gender in the data set?
+

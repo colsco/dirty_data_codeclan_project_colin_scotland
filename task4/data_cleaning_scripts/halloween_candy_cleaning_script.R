@@ -22,8 +22,6 @@ candy_2017 <- read_xlsx("raw_data/candy_ranking_data/boing-boing-candy-2017.xlsx
               clean_names()
 
 
-paste("************************************************************************** files read ok")
-
 # First look at the data ----
 
 #head(candy_2015)
@@ -102,7 +100,6 @@ removals <- c("please_",
               "coordinates",
               "x114",
               "chardonnay",
-              "gender",
               "state_province_county",
               "abstained",
               "real_housewives",
@@ -111,7 +108,7 @@ removals <- c("please_",
               "chalk",
               "mint_leaves"
               )
-paste("************************************************************************** removals set")
+
 candy_2015 <- candy_2015 %>% 
   select(!contains(removals))
          
@@ -125,7 +122,7 @@ candy_2016 <- candy_2016 %>%
 candy_2017 <- candy_2017 %>% 
   select(!contains(removals))
 
-paste("************************************************************************** junk parsed successfully")
+
 
 # dim summary after parsing ----
 
@@ -160,7 +157,8 @@ candy_2016 <- candy_2016 %>%
   relocate(how_old_are_you, .after = "year") %>% 
   rename("bonkers" = "bonkers_the_candy") %>% 
   rename("box_o_raisins" = "boxo_raisins") %>% 
-  rename("sweetums" = "sweetums_a_friend_to_diabetes")
+  rename("sweetums" = "sweetums_a_friend_to_diabetes") %>% 
+  rename("gender" = "your_gender")
 
 candy_2015 <- candy_2015 %>% 
   relocate(butterfinger, .after = "box_o_raisins") %>% 
@@ -194,7 +192,7 @@ candy_2017 <- candy_2017 %>%
   
 # Will they join now?
 
-#compare_df_cols(candy_15_16_full, candy_2017)
+# compare_df_cols(candy_15_16_full, candy_2017)
 
 # not too far away
 
@@ -216,18 +214,21 @@ candy_15_16_full <- candy_15_16_full %>%
 # full join again to keep all data
 
 candy_all <- full_join(candy_15_16_full, candy_2017)
+ 
+ candy_all <- candy_all %>%
+   relocate("gender", .after = "age")
 
 # NAs ----
  
 candy_all %>% 
    summarise(across(.fns = ~sum(is.na(.x))))
  
- rm(candy_15_16_full)
+  rm(candy_15_16_full)
  
- rm(candy_2015)
+  rm(candy_2015)
  
- rm(candy_2016)
+  rm(candy_2016)
  
- rm(candy_2017)
+  rm(candy_2017)
 
 
