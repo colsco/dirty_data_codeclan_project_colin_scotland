@@ -217,8 +217,9 @@ candy_15_16_full <- candy_15_16_full %>%
 
 candy_all <- full_join(candy_15_16_full, candy_2017)
 
-# 1. What is the total number of candy ratings given across three years. ----
-# (Number of candy ratings, not the number of raters.  Don't count missing values).
-
+# NAs ----
+ 
+ na_candy_all <- candy_all %>% 
+   summarise(across(.fns = ~sum(is.na(.x))))
 
 

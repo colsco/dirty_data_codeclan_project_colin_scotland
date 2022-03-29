@@ -29,4 +29,14 @@ source("data_cleaning_scripts/halloween_candy_cleaning_script.R")
 ## 1. What is the total number of candy ratings given across three years.
 ## (Number of candy ratings, not the number of raters.  Don't count missing values).
 
+```{r}
+# Add an ID column to keep track after pivoting;
+candy_all <- candy_all %>% 
+  mutate(id = 1:nrow(candy_all), .before = "year")
+
+
+candy_long <- candy_all %>% 
+  pivot_longer(cols = c(-id, -year, -age, -country, -going_out))
+  
+```
 
