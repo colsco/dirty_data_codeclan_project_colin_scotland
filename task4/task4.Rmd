@@ -188,10 +188,23 @@ candy_rating_rates %>%
   
 ```
 
-The candy bar with the most ratings of each kind were;
+#### The candy bar with the most ratings of each kind were;
 
-**JOY**: Any full sized candy bar with 7589 votes
+**JOY**       | Any full sized candy bar    | 7589 votes
 
-**MEH**: Lollipops with 1570 votes
+**MEH**       | Lollipops                   | 1570 votes
 
-**DESPAIR**: Gum from baseball cards with 7341 votes
+**DESPAIR**   | Gum from baseball cards     | 7341 votes
+
+## 5. How many people rated Starburst as despair?
+
+```{r}
+candy_rating_rates %>% 
+  
+select(name, all_the_despair) %>% 
+  
+  filter(name == "starburst" & all_the_despair > 0)
+```
+
+#### There were **1990 votes of 'despair'** for Starburst.
+
