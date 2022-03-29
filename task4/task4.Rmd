@@ -37,7 +37,7 @@ candy_all <- candy_all %>%
 
 
 candy_long <- candy_all %>% 
-  pivot_longer(cols = c(-id, -year, -age, -country, -going_out))
+  pivot_longer(cols = c(-id, -year, -age, -gender, -country, -going_out))
 
 
 
@@ -49,7 +49,7 @@ candy_long_ratings <- candy_long %>%
   
   mutate(num_ratings = if_else(value == "(?i)JOY" |
                                value == "(?i)MEH" |
-                               value == "(?i)DESPAIR", 1, 0), .after = "value") %>% 
+                               value == "(?i)DESPAIR", as.integer(1), as.integer(0)), .after = "value") %>% 
   
   summarise(total_ratings = sum(!is.na(num_ratings)))
 
@@ -102,8 +102,8 @@ candy_all <- candy_all %>%
   
 
 ```
-Note: most "junk" ages have been coerced into NAs during the `as.integer` change, leaving
-only numbers and NAs.  Some of the numbers are unrealistic and should be stripped out.
+Note: the "junk" age entries have been coerced into NAs during the `as.integer` change, leaving
+only numbers and NAs.  This is *a good thing* in this case.
 
 In theory, a parent could take a baby trick or treating, and have answered the survey 
 from their baby's perspective, so ages > 0 should be accepted.  At the other end of the 
@@ -148,6 +148,7 @@ Similarly to the last question;
 candy_all %>% 
   
   filter(going_out == "No") %>% 
+  
   summarise(avg_age_out = mean(age, na.rm = TRUE))
 ```
 
@@ -155,6 +156,15 @@ candy_all %>%
 
 ## 4. For each joy, despair and meh, which candy bar received the most of these ratings?
 
+###### Note: 'gender' was left out of this, because the `na.rm = TRUE` removed the results from 2015
+because there was no 'gender' result for this year.  This had a significant effect on the result and
+gender was never an integral part of *this* question.  It means for question 6 I have to remake an
+alternative 'candy_rating_rates' list which *does* include gender, which means that the overall
+'candy_rating_rates' are not identical. 
+
+*To be honest I think there's probably a more elegant way to present the results to this question *
+*rather than having three separate tables arranged in descending order - if I get time I'll come back *
+*to it. `slice_max(all_the_whatever, n = 1)` wasn't working for me for some reason.*
 
 ```{r}
 
@@ -196,6 +206,7 @@ candy_rating_rates %>%
 
 **DESPAIR**   | Gum from baseball cards     | 7341 votes
 
+
 ## 5. How many people rated Starburst as despair?
 
 ```{r}
@@ -203,10 +214,84 @@ candy_rating_rates %>%
   
 select(name, all_the_despair) %>% 
   
-  filter(name == "starburst" & all_the_despair > 0)
+filter(name == "starburst" & all_the_despair > 0)
 ```
 
 #### There were **1990 votes of 'despair'** for Starburst.
 
 ## 6. What was the most popular candy bar by this rating system for each gender in the data set?
+
+First, what entries do we have for gender;
+
+```{r}
+candy_long %>% 
+  
+  distinct(gender)
+  
+```
+So we have to deal with 'NA', Male', 'Female', 'Other', and 'I'd rather not say'.
+
+At least the formatting is consistent :)
+
+```{r}
+male_favourite <- candy_long %>% 
+  
+  select(gender, name, joy) %>% 
+  
+  filter(gender == "Male" & joy == 1)  %>% 
+  
+  group_by(name) %>% 
+  
+  summarise(total_joy_male = sum(joy))  
+
+female_favourite <- candy_long %>% 
+    
+  filter(gender == "Female" & joy == 1) %>% 
+  
+  group_by(name) %>% 
+  
+  summarise(total_joy_female = sum(joy))  
+  
+other_favourite <- candy_long %>%
+
+  filter(gender == "Other" & joy == 1) %>% 
+  
+  group_by(name) %>% 
+  
+  summarise(total_joy_other = sum(joy))  
+  
+nosay_favourite <- candy_long %>% 
+  
+  filter(gender == "I'd rather not say" & joy == 1) %>% 
+  
+  group_by(name) %>% 
+  
+  summarise(total_joy_nosay = sum(joy)) 
+  
+na_favourite <- candy_long %>% 
+  
+  filter(is.na(gender) & joy == 1) %>% 
+
+  group_by(name) %>% 
+  
+  summarise(total_joy_na = (sum(joy)))
+```
+
+```{r}
+
+slice_max(male_favourite, order_by = "total_joy_male", n = 1)
+
+slice_max(female_favourite, order_by = "total_joy_female", n = 1)
+
+slice_max(other_favourite, order_by = "total_joy_other", n = 1)
+
+slice_max(nosay_favourite, order_by = "total_joy_nosay", n = 1)
+
+slice_max(na_favourite, order_by = "total_joy_na", n = 1)
+
+
+
+```
+
+So the favourite sweets by gender are;
 
