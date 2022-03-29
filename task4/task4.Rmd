@@ -13,6 +13,7 @@ Set up libraries;
 ```{r}
 library(tidyverse)
 library(here)
+library(assertr)
 ```
 
 Set 'home' directory;
@@ -44,15 +45,65 @@ candy_long <- candy_all %>%
 
 
 
-candy_long %>% 
+candy_long <- candy_long %>% 
   
   mutate(num_ratings = if_else(value == "(?i)JOY" |
                                value == "(?i)MEH" |
                                value == "(?i)DESPAIR", 1, 0), .after = "value") %>% 
+  
   summarise(total_ratings = sum(!is.na(num_ratings)))
+
+candy_long
   
 ```
 
 There are 612266 ratings of sweets across the three years.
 
-## 2.  
+## 2.  What was the average age of people who are going out trick or treating?
+
+As a start it would be good to have the age column formatted as numeric;
+```{r}
+candy_all <- candy_all %>% 
+  
+  mutate(age = round(as.integer(age), digits = 1)) 
+  
+
+```
+Note: most "junk" ages have been coerced into NAs during the `as.integer` change, leaving
+only numbers and NAs.  Some of the numbers are unrealistic and should be stripped out.
+
+In theory, a parent could take a baby trick or treating, and have answered the survey 
+from their baby's perspective, so ages > 0 should be accepted.  At the other end of the 
+spectrum, the oldest person in the world is 119 years old, so anyone over 120 is lying. 
+
+```{r}
+candy_all <- candy_all %>% 
+  filter(age > 0 & age < 120)
+
+# and check there are no surprises;
+
+
+candy_all %>% 
+  filter(!is.na(age)) %>% 
+  verify(age > 0 & age < 120) 
+```
+
+Now, discounting NAs we want to know what the average age is of people going out.
+
+```{r}
+candy_all %>% 
+  
+# what are the responses - are they only 'yes'/'no', or are there some oddities or colloquialisms in there?
+  
+  distinct(going_out)
+
+# There are only 'Yes' and 'No'.
+
+candy_all %>% 
+  
+  filter(going_out == "Yes") %>% 
+  summarise(avg_age_out = mean(age, na.rm = TRUE))
+```
+
+So the average age of people going out trick or treating is just over **35 years and 1 month**.
+
