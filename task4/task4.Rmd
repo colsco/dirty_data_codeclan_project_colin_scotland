@@ -1,0 +1,32 @@
+---
+title: "Halloween Sweets Analysis"
+author: "Colin Scotland"
+date: "29/03/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Set up libraries;
+```{r}
+library(tidyverse)
+library(here)
+```
+
+Set 'home' directory;
+```{r}
+here::here()
+```
+
+Source cleaning script;
+
+```{r}
+source("data_cleaning_scripts/halloween_candy_cleaning_script.R")
+```
+
+## 1. What is the total number of candy ratings given across three years.
+## (Number of candy ratings, not the number of raters.  Don't count missing values).
+
+

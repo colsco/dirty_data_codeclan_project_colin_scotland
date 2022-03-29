@@ -22,27 +22,28 @@ candy_2017 <- read_xlsx("raw_data/candy_ranking_data/boing-boing-candy-2017.xlsx
               clean_names()
 
 
+paste("************************************************************************** files read ok")
 
 # First look at the data ----
 
-head(candy_2015)
-names(candy_2015)
-str(candy_2015)
-glimpse(candy_2015)
-class(candy_2015)
-dim(candy_2015)
+#head(candy_2015)
+#names(candy_2015)
+#str(candy_2015)
+#glimpse(candy_2015)
+#class(candy_2015)
+#dim(candy_2015)
 
-head(candy_2016)
-names(candy_2016)
-str(candy_2016)
-glimpse(candy_2016)
-class(candy_2016)
+#head(candy_2016)
+#names(candy_2016)
+#str(candy_2016)
+#glimpse(candy_2016)
+#class(candy_2016)
 
-head(candy_2017)
-names(candy_2017)
-str(candy_2017)
-glimpse(candy_2017)
-class(candy_2017)
+#head(candy_2017)
+#names(candy_2017)
+#str(candy_2017)
+#glimpse(candy_2017)
+#class(candy_2017)
 
 # 2015: 5630 rows x 124 columns
 # 2016: 1259 rows x 123 columns
@@ -60,7 +61,7 @@ candy_2017 <- candy_2017 %>%
   
   select(!contains("internal_id"))
 
-
+paste("************************************************************************** timestamp fixed")
 # parse the junk: 2015 ----
 
 removals <- c("please_", 
@@ -110,7 +111,7 @@ removals <- c("please_",
               "chalk",
               "mint_leaves"
               )
-
+paste("************************************************************************** removals set")
 candy_2015 <- candy_2015 %>% 
   select(!contains(removals))
          
@@ -123,6 +124,8 @@ candy_2016 <- candy_2016 %>%
 
 candy_2017 <- candy_2017 %>% 
   select(!contains(removals))
+
+paste("************************************************************************** junk parsed successfully")
 
 # dim summary after parsing ----
 
@@ -184,10 +187,11 @@ candy_15_16_full <- candy_15_16_full %>%
   rename("country" = "which_country_do_you_live_in")
 
 candy_2017 <- candy_2017 %>% 
-  relocate("age", .after = "year") %>% 
-  relocate("country", .after = "age") %>% 
-  rename("")
-          
+  relocate("age", .after = "year")
+
+candy_2017 <- candy_2017 %>% 
+  relocate("country", .after = "age")
+  
 # Will they join now?
 
 #compare_df_cols(candy_15_16_full, candy_2017)
@@ -205,10 +209,16 @@ candy_15_16_full <- candy_15_16_full %>%
   rename("brown_globs" = "anonymous_brown_globs_that_come_in_black_and_orange_wrappers")
 
 
-# compare_df_cols(candy_15_16_full, candy_2017)
+ compare_df_cols(candy_15_16_full, candy_2017)
 
 # final join ----
 
 # full join again to keep all data
 
 candy_all <- full_join(candy_15_16_full, candy_2017)
+
+# 1. What is the total number of candy ratings given across three years. ----
+# (Number of candy ratings, not the number of raters.  Don't count missing values).
+
+
+
