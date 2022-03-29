@@ -37,6 +37,22 @@ candy_all <- candy_all %>%
 
 candy_long <- candy_all %>% 
   pivot_longer(cols = c(-id, -year, -age, -country, -going_out))
+
+
+
+
+
+
+
+candy_long %>% 
+  
+  mutate(num_ratings = if_else(value == "(?i)JOY" |
+                               value == "(?i)MEH" |
+                               value == "(?i)DESPAIR", 1, 0), .after = "value") %>% 
+  summarise(total_ratings = sum(!is.na(num_ratings)))
   
 ```
 
+There are 612266 ratings of sweets across the three years.
+
+## 2.  
