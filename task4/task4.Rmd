@@ -293,5 +293,21 @@ slice_max(na_favourite, order_by = "total_joy_na", n = 1)
 
 ```
 
-So the favourite sweets by gender are;
+#### So the favourite sweets by gender are;
+
+**Male:**                  any_full_sized_candy_bar	            1605 votes
+
+**Female:   **             any_full_sized_candy_bar	            882	votes
+
+**Other: **                any_full_sized_candy_bar	            38 votes
+
+**Prefer not to say:**     any_full_sized_candy_bar	            71 votes
+
+**NA: **                   any_full_sized_candy_bar	            4993 votes	    
+
+
+The previous total count for 'any_full_sized_candy_bar' min question 4 was 7589.
+
+In this case, 1605 + 882 + 38 + 71 + 4993 = **7589**, so the results are
+consistent.
 
