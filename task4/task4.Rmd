@@ -57,7 +57,7 @@ candy_long
   
 ```
 
-There are 612266 ratings of sweets across the three years.
+#### There are **612266** ratings of sweets across the three years.
 
 ## 2.  What was the average age of people who are going out trick or treating?
 
@@ -105,5 +105,19 @@ candy_all %>%
   summarise(avg_age_out = mean(age, na.rm = TRUE))
 ```
 
-So the average age of people going out trick or treating is just over **35 years and 1 month**.
+#### So the average age of people going out trick or treating is just over **35 years and 1 month**.
 
+## 3. What was the average age of people **not** going trick or treating?
+
+Similarly to the last question;
+
+```{r}
+candy_all %>% 
+  
+  filter(going_out == "No") %>% 
+  summarise(avg_age_out = mean(age, na.rm = TRUE))
+```
+
+#### The average age of people going out trick or treating is just under **39 years and 2 months**.
+
+## 4. 
