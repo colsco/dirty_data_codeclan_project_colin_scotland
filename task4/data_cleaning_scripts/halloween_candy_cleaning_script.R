@@ -59,7 +59,7 @@ candy_2017 <- candy_2017 %>%
   
   select(!contains("internal_id"))
 
-paste("************************************************************************** timestamp fixed")
+
 # parse the junk: 2015 ----
 
 removals <- c("please_", 
@@ -106,7 +106,8 @@ removals <- c("please_",
               "ignore",
               "lapel_pins",
               "chalk",
-              "mint_leaves"
+              "mint_leaves",
+              "any_full_size"
               )
 
 candy_2015 <- candy_2015 %>% 
@@ -230,5 +231,7 @@ candy_all %>%
   rm(candy_2016)
  
   rm(candy_2017)
+  
+  rm(removals)
 
 

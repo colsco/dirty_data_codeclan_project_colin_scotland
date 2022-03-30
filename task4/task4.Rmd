@@ -28,7 +28,8 @@ source("data_cleaning_scripts/halloween_candy_cleaning_script.R")
 ```
 
 ## 1. What is the total number of candy ratings given across three years.
-## (Number of candy ratings, not the number of raters.  Don't count missing values).
+
+### (Number of candy ratings, not the number of raters.  Don't count missing values).
 
 ```{r}
 # Add an ID column to keep track after pivoting;
@@ -57,7 +58,7 @@ candy_long_ratings
   
 ```
 
-#### There are **612266** ratings of sweets across the three years.  
+#### There are **603883** ratings of sweets across the three years.  
 
 These can also be broken down further to show how many of each type there were;
 
@@ -89,12 +90,12 @@ candy_long_q1 %>%
 
 ```
 
-Double check the count: 275261 + 260569 + 76436 = **612266**, which matches the original answer.
+Double check the count: 267672 + 260162 + 76049 = **603883**, which matches the original answer.
 
 
 ## 2.  What was the average age of people who are going out trick or treating?
 
-As a start it would be good to have the age column formatted as numeric;
+As a start it would be good to have the age column formatted as integers;
 ```{r}
 candy_all <- candy_all %>% 
   
@@ -107,7 +108,7 @@ only numbers and NAs.  This is *a good thing* in this case.
 
 In theory, a parent could take a baby trick or treating, and have answered the survey 
 from their baby's perspective, so ages > 0 should be accepted.  At the other end of the 
-spectrum, the oldest person in the world is 119 years old, so anyone over 120 is lying. 
+spectrum, the oldest person in the world is 119 years old, so anyone aged 120 or over is lying. 
 
 ```{r}
 candy_all <- candy_all %>% 
@@ -130,7 +131,7 @@ candy_all %>%
   
   distinct(going_out)
 
-# There are only 'Yes' and 'No'.
+# There are only 'Yes', 'No' and 'NA'.
 
 candy_all %>% 
   
@@ -138,7 +139,7 @@ candy_all %>%
   summarise(avg_age_out = mean(age, na.rm = TRUE))
 ```
 
-#### So the average age of people going out trick or treating is just over **35 years and 1 month**.
+#### So the average age of people going out trick or treating is just over **35 years**.
 
 ## 3. What was the average age of people **not** going trick or treating?
 
@@ -152,19 +153,13 @@ candy_all %>%
   summarise(avg_age_out = mean(age, na.rm = TRUE))
 ```
 
-#### The average age of people going out trick or treating is just under **39 years and 2 months**.
+#### The average age of people going out trick or treating is just over **39 years**.
 
 ## 4. For each joy, despair and meh, which candy bar received the most of these ratings?
 
-###### Note: 'gender' was left out of this, because the `na.rm = TRUE` removed the results from 2015
-because there was no 'gender' result for this year.  This had a significant effect on the result and
-gender was never an integral part of *this* question.  It means for question 6 I have to remake an
-alternative 'candy_rating_rates' list which *does* include gender, which means that the overall
-'candy_rating_rates' are not identical. 
-
 *To be honest I think there's probably a more elegant way to present the results to this question *
 *rather than having three separate tables arranged in descending order - if I get time I'll come back *
-*to it. `slice_max(all_the_whatever, n = 1)` wasn't working for me for some reason.*
+*to it. `slice_max(all_the_whatever, order_by = "xxx", n = 1)` wasn't working for me for some reason.*
 
 ```{r}
 
@@ -200,11 +195,11 @@ candy_rating_rates %>%
 
 #### The candy bar with the most ratings of each kind were;
 
-**JOY**       | Any full sized candy bar    | 7589 votes
+**JOY**       | Any reese_s_peanut_butter_cups    | 7369 votes
 
-**MEH**       | Lollipops                   | 1570 votes
+**MEH**       | Lollipops                         | 1570 votes
 
-**DESPAIR**   | Gum from baseball cards     | 7341 votes
+**DESPAIR**   | Gum from baseball cards           | 7341 votes
 
 
 ## 5. How many people rated Starburst as despair?
@@ -242,44 +237,72 @@ male_favourite <- candy_long_q1 %>%
   
   group_by(name) %>% 
   
-  summarise(total_joy_male = sum(joy))  
+  drop_na(joy) %>% 
+  
+  summarise(total_joy_male = sum(as.integer(joy))) %>% 
+  
+  arrange(desc(total_joy_male))
 
 female_favourite <- candy_long_q1 %>% 
     
+  select(gender, name, joy) %>% 
+  
   filter(gender == "Female" & joy == 1) %>% 
   
   group_by(name) %>% 
   
-  summarise(total_joy_female = sum(joy))  
+  drop_na(joy) %>% 
+  
+  summarise(total_joy_female = sum(as.integer(joy))) %>% 
+  
+  arrange(desc(total_joy_female))
   
 other_favourite <- candy_long_q1 %>%
 
+  select(gender, name, joy) %>% 
+  
   filter(gender == "Other" & joy == 1) %>% 
   
   group_by(name) %>% 
   
-  summarise(total_joy_other = sum(joy))  
+  drop_na(joy) %>% 
+  
+  summarise(total_joy_other = sum(as.integer(joy))) %>% 
+  
+  arrange(desc(total_joy_other))
   
 nosay_favourite <- candy_long_q1 %>% 
+  
+  select(gender, name, joy) %>% 
   
   filter(gender == "I'd rather not say" & joy == 1) %>% 
   
   group_by(name) %>% 
   
-  summarise(total_joy_nosay = sum(joy)) 
+  drop_na(joy) %>% 
+  
+  summarise(total_joy_nosay = sum(as.integer(joy))) %>% 
+  
+  arrange(desc(total_joy_nosay))
   
 na_favourite <- candy_long_q1 %>% 
+  
+  select(gender, name, joy) %>% 
   
   filter(is.na(gender) & joy == 1) %>% 
 
   group_by(name) %>% 
   
-  summarise(total_joy_na = (sum(joy)))
+  drop_na(joy) %>% 
+  
+  summarise(total_joy_na = sum(as.integer(joy))) %>% 
+  
+  arrange(desc(total_joy_na))
 ```
 
 ```{r}
 
-slice_max(male_favourite, order_by = "total_joy_male", n = 1)
+slice_max(male_favourite, "total_joy_male", n = 1)
 
 slice_max(female_favourite, order_by = "total_joy_female", n = 1)
 
@@ -295,24 +318,21 @@ slice_max(na_favourite, order_by = "total_joy_na", n = 1)
 
 #### So the most popular sweets by gender are;
 
-**Male:**                  any_full_sized_candy_bar	            1605 votes
+**Male:**                  reese_s_peanut_butter_cups	            1545 votes
 
-**Female:   **             any_full_sized_candy_bar	            882	votes
+**Female:   **             reese_s_peanut_butter_cups	            837 votes
 
-**Other: **                any_full_sized_candy_bar	            38 votes
+**Other: **                kit_kat	                              34 votes
 
-**Prefer not to say:**     any_full_sized_candy_bar	            71 votes
+**Prefer not to say:**     reese_s_peanut_butter_cups	            69 votes
 
-**NA: **                   any_full_sized_candy_bar	            4993 votes	    
+**NA: **                   reese_s_peanut_butter_cups	            4890 votes	    
 
 
-The previous total count for 'any_full_sized_candy_bar' min question 4 was 7589.
 
-In this case, 1605 + 882 + 38 + 71 + 4993 = **7589**, so the results are
-consistent.
-
-Now that there are some results I've just realised that I haven't used the system 
-defined by the task of setting despair = -1, meh = 0 and joy = +1.  So redo the question;
+### *Now that I've got some results I've just realised that I haven't used the system *
+### *defined by the task of setting despair = -1, meh = 0 and joy = +1.  So redo the *
+### *question properly;*
 
 ```{r}
 candy_long_q6 <- candy_long %>% 
@@ -328,6 +348,7 @@ candy_long_q6 <- candy_long %>%
 The most popular sweets will be the ones with the highest scores after adding up all
 the joy (+1) and despair (-1).
 
+
 ```{r}
 q6_male <- candy_long_q6 %>% 
   
@@ -335,7 +356,9 @@ q6_male <- candy_long_q6 %>%
   
   group_by(name) %>% 
   
-  summarise(total_joy_male = sum(value_numeric, na.rm = TRUE))  
+  summarise(total_joy_male = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(total_joy_male))
 
 
 
@@ -346,7 +369,9 @@ q6_female <- candy_long_q6 %>%
   
   group_by(name) %>% 
   
-  summarise(total_joy_female = sum(value_numeric, na.rm = TRUE))  
+  summarise(total_joy_female = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(total_joy_female))
 
 
 
@@ -357,7 +382,9 @@ q6_other <- candy_long_q6 %>%
   
   group_by(name) %>% 
   
-  summarise(total_joy_other = sum(value_numeric, na.rm = TRUE))  
+  summarise(total_joy_other = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(total_joy_other))
 
 
 
@@ -368,7 +395,9 @@ q6_nosay <- candy_long_q6 %>%
   
   group_by(name) %>% 
   
-  summarise(total_joy_male = sum(value_numeric, na.rm = TRUE))  
+  summarise(total_joy_nosay = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(total_joy_nosay)) 
 
 
 
@@ -379,7 +408,9 @@ q6_na <- candy_long_q6 %>%
   
   group_by(name) %>% 
   
-  summarise(total_joy_male = sum(value_numeric, na.rm = TRUE))  
+  summarise(total_joy_na = sum(value_numeric, na.rm = TRUE))  %>% 
+  
+  arrange(desc(total_joy_na))
 ```
 
 That's the results grouped, so now to find the top scorers;
@@ -398,20 +429,20 @@ slice_max(na_favourite, order_by = "q6_na", n = 1)
 
 #### So the most popular sweets by gender using the *proper* system are;
 
-**Male:**                  any_full_sized_candy_bar	            1605 votes
+**Male:**                  reese_s_peanut_butter_cups	            1545 votes
 
-**Female:   **             any_full_sized_candy_bar	            882	votes
+**Female:   **             reese_s_peanut_butter_cups	            837 votes
 
-**Other: **                any_full_sized_candy_bar	            38 votes
+**Other: **                kit_kat	                              34 votes
 
-**Prefer not to say:**     any_full_sized_candy_bar	            71 votes
+**Prefer not to say:**     reese_s_peanut_butter_cups	            69 votes
 
-**NA: **                   any_full_sized_candy_bar	            4993 votes	
+**NA: **                   reese_s_peanut_butter_cups	            4890 votes	 
 
-...which is exactly the same as the result from not using the defined "system", 
+...which is exactly the same as the result from *not* using the defined "system", 
 so at least they're consistent!
 
-## What was the most popular candy bar in each year?
+## 7. What was the most popular candy bar in each year?
 
 ```{r}
 
@@ -421,9 +452,11 @@ candy_long_2015 <- candy_long_q6 %>%
   
   group_by(name) %>% 
   
-  summarise(top_2015 = sum(value_numeric, na.rm = TRUE)) 
+  summarise(top_2015 = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(top_2015))
 
-slice_max(candy_long_q7, order_by = "value_numeric", n = 1)
+slice_max(candy_long_2015, order_by = "value_numeric", n = 1)
   
   
 ```
@@ -436,7 +469,9 @@ candy_long_2016 <- candy_long_q6 %>%
   
   group_by(name) %>% 
   
-  summarise(top_2016 = sum(value_numeric, na.rm = TRUE)) 
+  summarise(top_2016 = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(top_2016))
 
 slice_max(candy_long_2016, order_by = "value_numeric", n = 1)
 
@@ -450,15 +485,55 @@ candy_long_2017 <- candy_long_q6 %>%
   
   group_by(name) %>% 
   
-  summarise(top_2017 = sum(value_numeric, na.rm = TRUE)) 
+  summarise(top_2017 = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(top_2017))
 
 slice_max(candy_long_2017, order_by = "value_numeric", n = 1)
 ```
 
 #### So the most popular sweets by year are;
 
-**2015:**                 any_full_sized_candy_bar	            4603 votes
+**2015:**   reese_s_peanut_butter_cups	   4375 votes
 
-**2016:**                 any_full_sized_candy_bar	            1037 votes
+**2016:**   kit_kat              	          920 votes
 
-**2017: **                any_full_sized_candy_bar	            1542 votes
+**2017:**   reese_s_peanut_butter_cups     1403 votes
+
+
+## 8. What was the most popular candy bar by this rating for people in US, Canada,
+UK and all other countries?
+
+```{r}
+countries <- candy_long %>% 
+  
+  distinct(country) %>% 
+  arrange(country)
+
+# UK cleanup ----
+
+regex_1 <- countries %>% 
+  mutate(fixed = str_replace_all(country, pattern = "[Ee]n[dg]land|Scotland|(?i)u[:punct:]*k[:punct:]*|(?i)united king*dom", "Great Britain")) 
+
+# Canada cleanup ----
+
+regex_1 <- regex_1 %>% 
+  mutate(fixed = str_replace_all(fixed, pattern = "(?i)cana*d*a*e*|(?i)cascadia", "Canada"))
+
+# Other general cleans
+
+#regex_1 <- regex_1 %>% 
+#  mutate(fixed = str_replace_all(fixed, pattern = "[0-9]", is.na()))
+  
+
+
+
+
+#regex_1 <- regex_1 %>% 
+#  mutate(str_replace_all(country, pattern = "(?i)[A-Za-z ]*u+n+i+t+e+d+ +s+t+a+t+e+s+[A-Za-z]*|(?i)[a-z]*USA[:punct:]*|N. #America|(?i)usa+|(?i)america|^[A-Z][a-z]{3}[:punct:]{4}[A-Za-z]{6}|(?i)m+[eu]+r+[ricka]*|(?i)i pretend [a-z0-9 [:punct:]]*"
+#                     , "USA"))
+
+  
+```
+
+
