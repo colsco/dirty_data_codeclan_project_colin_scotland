@@ -510,28 +510,48 @@ countries <- candy_long %>%
   distinct(country) %>% 
   arrange(country)
 
-# UK cleanup ----
-
+# Capitalise country names;
 regex_1 <- countries %>% 
-  mutate(fixed = str_replace_all(country, pattern = "[Ee]n[dg]land|Scotland|(?i)u[:punct:]*k[:punct:]*|(?i)united king*dom", "Great Britain")) 
-
-# Canada cleanup ----
-
-regex_1 <- regex_1 %>% 
-  mutate(fixed = str_replace_all(fixed, pattern = "(?i)cana*d*a*e*|(?i)cascadia", "Canada"))
-
-# Other general cleans
-
-#regex_1 <- regex_1 %>% 
-#  mutate(fixed = str_replace_all(fixed, pattern = "[0-9]", is.na()))
+  mutate(country = str_to_title(country))
   
 
 
+# UK cleanup ----
+
+regex_1 <- regex_1 %>% 
+  mutate(fixed = str_replace_all(country, pattern = "[Ee]n[dg]land|Scotland|(?i)u[:punct:]*k[:punct:]*|(?i)united king*dom", "Great Britain")) 
+
+# Canada cleanup ----
+regex_1 <- regex_1 %>% 
+  mutate(fixed = str_replace_all(fixed, pattern = "(?i)cana*d*a*e*[:symbol:]*|(?i)cascadia|(?i)Soviet Canuckistan", "Canada"))
 
 
-#regex_1 <- regex_1 %>% 
-#  mutate(str_replace_all(country, pattern = "(?i)[A-Za-z ]*u+n+i+t+e+d+ +s+t+a+t+e+s+[A-Za-z]*|(?i)[a-z]*USA[:punct:]*|N. #America|(?i)usa+|(?i)america|^[A-Z][a-z]{3}[:punct:]{4}[A-Za-z]{6}|(?i)m+[eu]+r+[ricka]*|(?i)i pretend [a-z0-9 [:punct:]]*"
-#                     , "USA"))
+# USA cleanup ----
+
+regex_1 <- regex_1 %>% 
+  mutate(fixed = str_replace_all(fixed, pattern = "(?i)[A-Za-z ]*u+n+i+t+e+d+ +s+t+a+t+e+s+[A-Za-z]*|(?i)[a-z]*USA[:punct:]*|N. America|(?i)usa+|(?i)america|^[A-Z][a-z]{3}[:punct:]{4}[A-Za-z]{6}|(?i)[:punct:]*[:symbol:]*m+[eu]+r+[ricka]*|(?i)i pretend [a-z0-9 [:punct:]*[:symbol:]]*|(?i)unite*s*d* *s*t*a*s*t*e*s+"
+                     , "USA"))
+
+
+
+
+
+
+
+# Other general cleans: run this LAST ----
+
+regex_1 <- regex_1 %>%      # remove numerics and various randoms.
+  mutate(fixed = str_remove_all(fixed, pattern = "\\d+[:punct:]*\\d*$|A [Tt]ropical [Ii]sland [Ss]outh [Oo]f [Tt]he [Ee]quator|one of the best ones|[Aa]tlantis|[Nn]arnia|[Dd]enial|[Ee]arth|[Ff]ear [Aa]nd [Ll]oathing|[Gg]od's [Cc]ountry|I [Dd]on't [Kk]now [Aa]nymore|[Ii]nsanity [Ll]ately|[Nn]everland|[Nn]ot [Tt]he USA [Oo]r Canada|[Oo]ne [Oo]f [Tt]he [Bb]est [Oo]nes|[Ss]ee [Aa]bove|[Ss]omewhere|(?i)subscribe to dm4uz3 on youtube|The Yoo Ess of Aaayyyyyy|there isn't one for old men|this one|Trumpistan|unhinged states|^A$|[Ee][Uu][Aa]|[Ee]urope"))  
+
+regex_1 <- regex_1 %>% 
+  mutate(fixed = na_if(fixed, ""))      # change blank cells to NA
+
+
+
+
+
+
+
 
   
 ```
