@@ -409,5 +409,56 @@ slice_max(na_favourite, order_by = "q6_na", n = 1)
 **NA: **                   any_full_sized_candy_bar	            4993 votes	
 
 ...which is exactly the same as the result from not using the defined "system", 
-so at least they're consistent.
+so at least they're consistent!
 
+## What was the most popular candy bar in each year?
+
+```{r}
+
+candy_long_2015 <- candy_long_q6 %>% 
+  
+  filter(year == "2015") %>%  
+  
+  group_by(name) %>% 
+  
+  summarise(top_2015 = sum(value_numeric, na.rm = TRUE)) 
+
+slice_max(candy_long_q7, order_by = "value_numeric", n = 1)
+  
+  
+```
+
+```{r}
+
+candy_long_2016 <- candy_long_q6 %>% 
+  
+  filter(year == "2016") %>%  
+  
+  group_by(name) %>% 
+  
+  summarise(top_2016 = sum(value_numeric, na.rm = TRUE)) 
+
+slice_max(candy_long_2016, order_by = "value_numeric", n = 1)
+
+```
+
+```{r}
+
+candy_long_2017 <- candy_long_q6 %>% 
+  
+  filter(year == "2017") %>%  
+  
+  group_by(name) %>% 
+  
+  summarise(top_2017 = sum(value_numeric, na.rm = TRUE)) 
+
+slice_max(candy_long_2017, order_by = "value_numeric", n = 1)
+```
+
+#### So the most popular sweets by year are;
+
+**2015:**                 any_full_sized_candy_bar	            4603 votes
+
+**2016:**                 any_full_sized_candy_bar	            1037 votes
+
+**2017: **                any_full_sized_candy_bar	            1542 votes
