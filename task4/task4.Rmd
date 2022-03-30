@@ -73,7 +73,7 @@ candy_long %>%
 So there are only "JOY", "DESPAIR", "MEH" and NAs to deal with.
 
 ```{r}
-candy_long <- candy_long %>% 
+candy_long_q1 <- candy_long %>% 
   
  # select(name, value) %>% 
   
@@ -82,7 +82,7 @@ candy_long <- candy_long %>%
          meh = (if_else(value == "MEH", 1, 0)), 
          .after = "value") 
 
-candy_long %>% 
+candy_long_q1 %>% 
   
   summarise(sum(joy, na.rm = TRUE), sum(despair, na.rm = TRUE), sum(meh, na.rm = TRUE))
 
@@ -168,7 +168,7 @@ alternative 'candy_rating_rates' list which *does* include gender, which means t
 
 ```{r}
 
-candy_rating_rates <- candy_long %>% 
+candy_rating_rates <- candy_long_q1 %>% 
   
   group_by(name, joy, meh, despair) %>% 
   
@@ -234,7 +234,7 @@ So we have to deal with 'NA', Male', 'Female', 'Other', and 'I'd rather not say'
 At least the formatting is consistent :)
 
 ```{r}
-male_favourite <- candy_long %>% 
+male_favourite <- candy_long_q1 %>% 
   
   select(gender, name, joy) %>% 
   
@@ -244,7 +244,7 @@ male_favourite <- candy_long %>%
   
   summarise(total_joy_male = sum(joy))  
 
-female_favourite <- candy_long %>% 
+female_favourite <- candy_long_q1 %>% 
     
   filter(gender == "Female" & joy == 1) %>% 
   
@@ -252,7 +252,7 @@ female_favourite <- candy_long %>%
   
   summarise(total_joy_female = sum(joy))  
   
-other_favourite <- candy_long %>%
+other_favourite <- candy_long_q1 %>%
 
   filter(gender == "Other" & joy == 1) %>% 
   
@@ -260,7 +260,7 @@ other_favourite <- candy_long %>%
   
   summarise(total_joy_other = sum(joy))  
   
-nosay_favourite <- candy_long %>% 
+nosay_favourite <- candy_long_q1 %>% 
   
   filter(gender == "I'd rather not say" & joy == 1) %>% 
   
@@ -268,7 +268,7 @@ nosay_favourite <- candy_long %>%
   
   summarise(total_joy_nosay = sum(joy)) 
   
-na_favourite <- candy_long %>% 
+na_favourite <- candy_long_q1 %>% 
   
   filter(is.na(gender) & joy == 1) %>% 
 
@@ -293,7 +293,7 @@ slice_max(na_favourite, order_by = "total_joy_na", n = 1)
 
 ```
 
-#### So the favourite sweets by gender are;
+#### So the most popular sweets by gender are;
 
 **Male:**                  any_full_sized_candy_bar	            1605 votes
 
@@ -310,4 +310,104 @@ The previous total count for 'any_full_sized_candy_bar' min question 4 was 7589.
 
 In this case, 1605 + 882 + 38 + 71 + 4993 = **7589**, so the results are
 consistent.
+
+Now that there are some results I've just realised that I haven't used the system 
+defined by the task of setting despair = -1, meh = 0 and joy = +1.  So redo the question;
+
+```{r}
+candy_long_q6 <- candy_long %>% 
+  
+  # set up the scores for ratings;
+  
+  mutate(value_numeric = case_when(value == "JOY" ~ as.numeric(1),
+                                   value == "MEH" ~ as.numeric(0),
+                                   value == "DESPAIR" ~ as.numeric(-1)))
+
+```
+
+The most popular sweets will be the ones with the highest scores after adding up all
+the joy (+1) and despair (-1).
+
+```{r}
+q6_male <- candy_long_q6 %>% 
+  
+  filter(gender == "Male")  %>% 
+  
+  group_by(name) %>% 
+  
+  summarise(total_joy_male = sum(value_numeric, na.rm = TRUE))  
+
+
+
+
+q6_female <- candy_long_q6 %>% 
+  
+  filter(gender == "Female")  %>% 
+  
+  group_by(name) %>% 
+  
+  summarise(total_joy_female = sum(value_numeric, na.rm = TRUE))  
+
+
+
+
+q6_other <- candy_long_q6 %>% 
+  
+  filter(gender == "Other")  %>% 
+  
+  group_by(name) %>% 
+  
+  summarise(total_joy_other = sum(value_numeric, na.rm = TRUE))  
+
+
+
+
+q6_nosay <- candy_long_q6 %>% 
+  
+  filter(gender == "I'd rather not say")  %>% 
+  
+  group_by(name) %>% 
+  
+  summarise(total_joy_male = sum(value_numeric, na.rm = TRUE))  
+
+
+
+
+q6_na <- candy_long_q6 %>% 
+  
+  filter(is.na(gender))  %>% 
+  
+  group_by(name) %>% 
+  
+  summarise(total_joy_male = sum(value_numeric, na.rm = TRUE))  
+```
+
+That's the results grouped, so now to find the top scorers;
+
+```{r}
+slice_max(male_favourite, order_by = "q6_male", n = 1)
+
+slice_max(female_favourite, order_by = "q6_female", n = 1)
+
+slice_max(other_favourite, order_by = "q6_other", n = 1)
+
+slice_max(nosay_favourite, order_by = "q6_nosay", n = 1)
+
+slice_max(na_favourite, order_by = "q6_na", n = 1)
+```
+
+#### So the most popular sweets by gender using the *proper* system are;
+
+**Male:**                  any_full_sized_candy_bar	            1605 votes
+
+**Female:   **             any_full_sized_candy_bar	            882	votes
+
+**Other: **                any_full_sized_candy_bar	            38 votes
+
+**Prefer not to say:**     any_full_sized_candy_bar	            71 votes
+
+**NA: **                   any_full_sized_candy_bar	            4993 votes	
+
+...which is exactly the same as the result from not using the defined "system", 
+so at least they're consistent.
 
