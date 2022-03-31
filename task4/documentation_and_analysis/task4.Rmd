@@ -6,17 +6,25 @@ output: html_document
 ---
 
 The cleaning script for this analysis is `halloween_candy_cleaning_script.R`.  This
-cleaning script performs the following processes;
-- reads in three .csv files containing "trick or treat" data for 2015, 2016 and 2017
-- removes unnecessary columns that are not needed for any analysis
-- corrects the time format for 2017 and reduces all three data sets to show only the year
-- changes the order of certain columns to set up for joining
-- renames several columns to make the join easier
-- performs a `full_join` to bring all the data into one data set while keeping all data
-- cleans up the environment
+cleaning script can be found in the *cleaning_script* folder and runs the following;
 
-The first process done upon exiting the cleaning script and setting up the libraries in this
-Rmd file is to pivot the data into a longer form to allow easier analysis.
+1. reads in three .csv files containing "trick or treat" data for 2015, 2016 and 2017
+2. removes unnecessary columns that are not needed for any analysis
+3. corrects the time format for 2017 and reduces all three data sets to show only the year
+4. changes the order of certain columns to set up for joining
+5. renames several columns to make the join easier
+6. performs a `full_join` to bring all the data into one data set while keeping all data
+7. saves a clean data set to a .csv file in the *clean_data* folder
+8. cleans up the environment
+
+In summary, the file structure is;
+
+  Top level --> .proj file
+            --> data_cleaning_scripts --> .R script file
+            --> clean_data --> clean .csv file
+            --> documentation_and_analysis --> .Rmd and .html output file
+            --> raw_data --> raw, uncleaned .csv/.xls files
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -37,12 +45,14 @@ here::here()
 Source cleaning script;
 
 ```{r}
-source("data_cleaning_scripts/halloween_candy_cleaning_script.R")
+source(here("data_cleaning_scripts/halloween_candy_cleaning_script.R"))
 ```
 
 ## 1. What is the total number of candy ratings given across three years.
 
 ### (Number of candy ratings, not the number of raters.  Don't count missing values).
+
+The first thing to do is to pivot the data into a longer form to allow easier analysis;
 
 ```{r}
 # Add an ID column to keep track after pivoting;
@@ -53,12 +63,12 @@ candy_all <- candy_all %>%
 candy_long <- candy_all %>% 
   pivot_longer(cols = c(-id, -year, -age, -gender, -country, -going_out))
 
+```
+
+Then assign some values to *JOY*, *MEH* and *DESPAIR* to allow them to be counted;
 
 
-
-
-
-
+```{r}
 candy_long_ratings <- candy_long %>% 
   
   mutate(num_ratings = if_else(value == "(?i)JOY" |
@@ -121,7 +131,8 @@ only numbers and NAs.  This is *a good thing* in this case.
 
 In theory, a parent could take a baby trick or treating, and have answered the survey 
 from their baby's perspective, so ages > 0 should be accepted.  At the other end of the 
-spectrum, the oldest person in the world is 119 years old, so anyone aged 120 or over is lying. 
+spectrum, the oldest person in the world is reported to be 119 years old, so anyone aged 
+120 or over is lying. 
 
 ```{r}
 candy_all <- candy_all %>% 
@@ -170,9 +181,7 @@ candy_all %>%
 
 ## 4. For each joy, despair and meh, which candy bar received the most of these ratings?
 
-*To be honest I think there's probably a more elegant way to present the results to this question *
-*rather than having three separate tables arranged in descending order - if I get time I'll come back *
-*to it. `slice_max(all_the_whatever, order_by = "xxx", n = 1)` wasn't working for me for some reason.*
+Basically, sum all the "JOY", "MEH" and "DESPAIR" counts for each candy type and return the top scorer;
 
 ```{r}
 
@@ -208,14 +217,17 @@ candy_rating_rates %>%
 
 #### The candy bar with the most ratings of each kind were;
 
-**JOY**       | Any reese_s_peanut_butter_cups    | 7369 votes
 
-**MEH**       | Lollipops                         | 1570 votes
+**JOY**: Any reese_s_peanut_butter_cups     7369 votes
 
-**DESPAIR**   | Gum from baseball cards           | 7341 votes
+**MEH**: Lollipops                          1570 votes
+
+**DESPAIR**: Gum from baseball cards        7341 votes
 
 
 ## 5. How many people rated Starburst as despair?
+
+Filter on "starburst" and count the "DESPAIR";
 
 ```{r}
 candy_rating_rates %>% 
@@ -331,21 +343,21 @@ slice_max(na_favourite, order_by = "total_joy_na", n = 1)
 
 #### So the most popular sweets by gender are;
 
-**Male:**                  reese_s_peanut_butter_cups	            1545 votes
+**Male:**                  reese's peanut butter cups	            1545 votes
 
-**Female:   **             reese_s_peanut_butter_cups	            837 votes
+**Female:   **             reese's peanut butter cups	            837 votes
 
-**Other: **                kit_kat	                              34 votes
+**Other: **                kit kat	                              34 votes
 
-**Prefer not to say:**     reese_s_peanut_butter_cups	            69 votes
+**Prefer not to say:**     reese's peanut butter cups	            69 votes
 
-**NA: **                   reese_s_peanut_butter_cups	            4890 votes	    
+**NA: **                   reese's peanut butter cups	            4890 votes	    
 
 
 
 ### *Now that I've got some results I've just realised that I haven't used the system *
-### *defined by the task of setting despair = -1, meh = 0 and joy = +1.  So redo the *
-### *question properly;*
+### *defined by the task of setting despair = -1, meh = 0 and joy = +1.  So I'll redo the *
+### *question properly now; 🙄*
 
 ```{r}
 candy_long_q6 <- candy_long %>% 
@@ -442,15 +454,15 @@ slice_max(na_favourite, order_by = "q6_na", n = 1)
 
 #### So the most popular sweets by gender using the *proper* system are;
 
-**Male:**                  reese_s_peanut_butter_cups	            1545 votes
+**Male:**                  reese's peanut butter cups	            1545 votes
 
-**Female:   **             reese_s_peanut_butter_cups	            837 votes
+**Female:   **             reese's peanut butter cups	            837 votes
 
-**Other: **                kit_kat	                              34 votes
+**Other: **                kit kat	                              34 votes
 
-**Prefer not to say:**     reese_s_peanut_butter_cups	            69 votes
+**Prefer not to say:**     reese's peanut butter cups	            69 votes
 
-**NA: **                   reese_s_peanut_butter_cups	            4890 votes	 
+**NA: **                   reese's peanut butter cups	            4890 votes	 
 
 ...which is exactly the same as the result from *not* using the defined "system", 
 so at least they're consistent!
@@ -507,15 +519,17 @@ slice_max(candy_long_2017, order_by = "value_numeric", n = 1)
 
 #### So the most popular sweets by year are;
 
-**2015:**   reese_s_peanut_butter_cups	   4375 votes
+**2015:**   reese's peanut butter cups	   4375 votes
 
-**2016:**   kit_kat              	          920 votes
+**2016:**   kit kat              	          920 votes
 
-**2017:**   reese_s_peanut_butter_cups     1403 votes
+**2017:**   reese's peanut butter cups     1403 votes
 
 
 ## 8. What was the most popular candy bar by this rating for people in US, Canada,
 UK and all other countries?
+
+First thing to do is to clean up the 'country' column;
 
 ```{r}
 #countries <- candy_long %>% 
@@ -680,8 +694,8 @@ slice_max(candy_country, order_by = "value_numeric", n = 1)
   
 ```
 The regex cleaning is not perfect, and even after several attempts still had some small inaccuracies.  However, 
-the number of imperfectly tidied country names is a very small part of the overall and should not influence the
-results too much.
+the number of imperfectly tidied country names is a very small fraction of the overall and should not influence the
+results by a great deal.
 
 
 #### So our result by country is as follows;
@@ -693,3 +707,7 @@ results too much.
 **Canada:** kit kat	                             233 votes
 
 **Other:**  kit kat	                              61 votes	
+
+It should be noted that in the UK, rolos and toblerone also scored 30 votes, so there was a tie for first place.
+
+

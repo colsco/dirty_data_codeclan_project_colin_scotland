@@ -12,13 +12,13 @@ library(lubridate)
 
 # Read in the data and clean column names ----
 
-candy_2015 <- read_xlsx("raw_data/candy_ranking_data/boing-boing-candy-2015.xlsx") %>% 
+candy_2015 <- read_xlsx(here("raw_data/candy_ranking_data/boing-boing-candy-2015.xlsx")) %>% 
               clean_names()
 
-candy_2016 <- read_xlsx("raw_data/candy_ranking_data/boing-boing-candy-2016.xlsx") %>% 
+candy_2016 <- read_xlsx(here("raw_data/candy_ranking_data/boing-boing-candy-2016.xlsx")) %>% 
               clean_names()
 
-candy_2017 <- read_xlsx("raw_data/candy_ranking_data/boing-boing-candy-2017.xlsx") %>% 
+candy_2017 <- read_xlsx(here("raw_data/candy_ranking_data/boing-boing-candy-2017.xlsx")) %>% 
               clean_names()
 
 
@@ -226,9 +226,10 @@ candy_all %>%
  
 # Quite a lot of NAs, but it looks like they shouldn't interfere with analysis too much.
  
-# save joined data set;
+# write to .csv
  
-# write_csv("clean_data/candy_all.csv")
+ candy_all <- candy_all %>% 
+   write_csv(here("clean_data/candy_clean.csv"))
 
 # clean up environment
   

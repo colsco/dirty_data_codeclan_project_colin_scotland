@@ -4,6 +4,29 @@ author: "Colin Scotland"
 date: "26/03/2022"
 output: html_document
 ---
+The cleaning script for this analysis is `birds_cleaning.R`.  This
+cleaning script can be found in the *data_cleaning_script* folder and runs the following;
+
+1. reads in two sheets from a "dirty" .xls file containing seabird observation data for 
+various sightings from various ships in several locations
+2. joins the two data sheets to create one data set for analysis
+3. removes unnecessary columns
+4. cleans date and time columns
+5. checks counts and NA values
+6. removes add-on text denoting plumage and/or age of birds
+7. verifies latitude and longitude values are sensible
+8. renames columns to more analysis-friendly names
+9. saves a clean .csv file to the *clean_data* folder
+
+In summary, the file structure is;
+
+* Top level --> .proj file
+* data_cleaning_scripts --> .R script file
+* clean_data --> clean .csv file
+* documentation_and_analysis --> .Rmd and .html output file
+* raw_data --> raw, uncleaned .csv/.xls files
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -19,14 +42,14 @@ here::here()
 ```
 
 ```{r}
-source("data_cleaning_scripts/birds_cleaning.R")
+source(here("data_cleaning_scripts/birds_cleaning.R"))
 ```
 
 ### Analysis
 
 For each question where we ask for bird names, give the bird’s common name, scientific name and species abbreviation.
 
-#### 1. Which bird had the most individual sightings? 
+## 1. Which bird had the most individual sightings? 
 
 ```{r}
 # Group the results by common_name;
@@ -46,11 +69,11 @@ birds_clean %>%
   
 ```
 
-The bird with the most sightings was the *Wandering albatross sensu lato*, scientific 
-name *Diomedea antipodensis / exulans* with species abbreviation *DIOANTEXU*.  This
-particular species had 11247 sightings.
+#### The bird with the most sightings was the *Wandering albatross sensu lato*, scientific 
+#### name *Diomedea antipodensis / exulans* with species abbreviation *DIOANTEXU*.  This
+#### particular species had 11247 sightings.
 
-#### 2. Which bird had the highest total count?
+## 2. Which bird had the highest total count?
 
 ```{r}
 birds_clean %>% 
@@ -64,8 +87,8 @@ birds_clean %>%
 
 ```
 
-The bird with the highest total count is the *Short-tailed shearwater, Puffinus tenuirostris*,
-or *PUFTEN* with a total count of 982553.
+#### The bird with the highest total count is the *Short-tailed shearwater, Puffinus tenuirostris*,
+#### or *PUFTEN* with a total count of 982553.
 
 ###### NOTE:
 It was noted within the cleaning process that some species had very high counts of 99,999.
@@ -82,7 +105,7 @@ assumption that this was the upper limit of the count that could be recorded at 
 --------------------------------------------------------------------------------
 
 
-#### 3. Which bird had the highest total count above a latitude of -30?
+## 3. Which bird had the highest total count above a latitude of -30?
 
 ```{r}
 birds_clean %>% 
@@ -98,11 +121,11 @@ birds_clean %>%
   arrange(desc(total_count))
 ```
 
-The bird with the highest total count above latitude -30 was the *Wedge-tailed shearwater*, 
-*Puffinus pacificus* or PUFPAC, with a total count of 855.
+#### The bird with the highest total count above latitude -30 was the *Wedge-tailed shearwater*, 
+#### *Puffinus pacificus* or PUFPAC, with a total count of 855.
 
 
-#### 4. How many different types of birds were only ever seen in groups of 1?
+## 4. How many different types of birds were only ever seen in groups of 1?
 
 i.e. how many species of birds were **only** ever seen alone.  One way to determine this would be
 to generate a list of all the birds with a count of 1, then generate a list with a count > 1
@@ -159,10 +182,10 @@ flock_birds <- flock_birds %>%
 anti_join(solo_birds, flock_birds, by = "common_name")
 ```
 
-This suggests there are **23 species** that were **only** ever seen in solitude.
+#### This suggests there are **23 species** that were **only** ever seen in solitude.
 
 
-#### 5. How many penguins were seen? (Hint: there are many types of penguin)
+## 5. How many penguins were seen? (Hint: there are many types of penguin)
 
 
 ```{r}
@@ -188,4 +211,4 @@ penguins_by_species %>%
 ```
 
 
-In total **158 penguins** were recorded.
+#### In total **158 penguins** were recorded.

@@ -171,6 +171,26 @@ pre code {
 </div>
 
 
+<p>The cleaning script for this analysis is <code>birds_cleaning.R</code>. This cleaning script can be found in the <em>data_cleaning_script</em> folder and runs the following;</p>
+<ol style="list-style-type: decimal">
+<li>reads in two sheets from a “dirty” .xls file containing seabird observation data for various sightings from various ships in several locations</li>
+<li>joins the two data sheets to create one data set for analysis</li>
+<li>removes unnecessary columns</li>
+<li>cleans date and time columns</li>
+<li>checks counts and NA values</li>
+<li>removes add-on text denoting plumage and/or age of birds</li>
+<li>verifies latitude and longitude values are sensible</li>
+<li>renames columns to more analysis-friendly names</li>
+<li>saves a clean .csv file to the <em>clean_data</em> folder</li>
+</ol>
+<p>In summary, the file structure is;</p>
+<ul>
+<li>Top level –&gt; .proj file</li>
+<li>data_cleaning_scripts –&gt; .R script file</li>
+<li>clean_data –&gt; clean .csv file</li>
+<li>documentation_and_analysis –&gt; .Rmd and .html output file</li>
+<li>raw_data –&gt; raw, uncleaned .csv/.xls files</li>
+</ul>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
 <pre><code>## v ggplot2 3.3.5     v purrr   0.3.4
@@ -195,7 +215,7 @@ pre code {
 ##     transpose</code></pre>
 <pre class="r"><code>here::here()</code></pre>
 <pre><code>## [1] &quot;C:/Users/colin/Documents/CodeClan/dirty_data_codeclan_project_colin_scotland/task3&quot;</code></pre>
-<pre class="r"><code>source(&quot;data_cleaning_scripts/birds_cleaning.R&quot;)</code></pre>
+<pre class="r"><code>source(here(&quot;data_cleaning_scripts/birds_cleaning.R&quot;))</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;janitor&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:stats&#39;:
@@ -262,8 +282,9 @@ pre code {
 <div id="analysis" class="section level3">
 <h3>Analysis</h3>
 <p>For each question where we ask for bird names, give the bird’s common name, scientific name and species abbreviation.</p>
-<div id="which-bird-had-the-most-individual-sightings" class="section level4">
-<h4>1. Which bird had the most individual sightings?</h4>
+</div>
+<div id="which-bird-had-the-most-individual-sightings" class="section level2">
+<h2>1. Which bird had the most individual sightings?</h2>
 <pre class="r"><code># Group the results by common_name;
   
 birds_clean %&gt;% 
@@ -290,10 +311,18 @@ birds_clean %&gt;%
 ##  9 Shy / white-capped / Salvin&#39;s /~ Thalassarche c~ THACAUSALERE            1397
 ## 10 Sooty shearwater                 Puffinus grise~ PUFGRI                  1346
 ## # ... with 151 more rows</code></pre>
-<p>The bird with the most sightings was the <em>Wandering albatross sensu lato</em>, scientific name <em>Diomedea antipodensis / exulans</em> with species abbreviation <em>DIOANTEXU</em>. This particular species had 11247 sightings.</p>
+<div id="the-bird-with-the-most-sightings-was-the-wandering-albatross-sensu-lato-scientific" class="section level4">
+<h4>The bird with the most sightings was the <em>Wandering albatross sensu lato</em>, scientific</h4>
 </div>
-<div id="which-bird-had-the-highest-total-count" class="section level4">
-<h4>2. Which bird had the highest total count?</h4>
+<div id="name-diomedea-antipodensis-exulans-with-species-abbreviation-dioantexu.-this" class="section level4">
+<h4>name <em>Diomedea antipodensis / exulans</em> with species abbreviation <em>DIOANTEXU</em>. This</h4>
+</div>
+<div id="particular-species-had-11247-sightings." class="section level4">
+<h4>particular species had 11247 sightings.</h4>
+</div>
+</div>
+<div id="which-bird-had-the-highest-total-count" class="section level2">
+<h2>2. Which bird had the highest total count?</h2>
 <pre class="r"><code>birds_clean %&gt;% 
   
   group_by(common_name, scientific_name, species_abbreviation) %&gt;% 
@@ -318,7 +347,11 @@ birds_clean %&gt;%
 ##  9 Little shearwater               Puffinus assimi~ PUFASS                 17428
 ## 10 Short-tailed / Sooty shearwater Puffinus tenuir~ PUFTENGRI              13529
 ## # ... with 151 more rows</code></pre>
-<p>The bird with the highest total count is the <em>Short-tailed shearwater, Puffinus tenuirostris</em>, or <em>PUFTEN</em> with a total count of 982553.</p>
+<div id="the-bird-with-the-highest-total-count-is-the-short-tailed-shearwater-puffinus-tenuirostris" class="section level4">
+<h4>The bird with the highest total count is the <em>Short-tailed shearwater, Puffinus tenuirostris</em>,</h4>
+</div>
+<div id="or-puften-with-a-total-count-of-982553." class="section level4">
+<h4>or <em>PUFTEN</em> with a total count of 982553.</h4>
 <div id="note" class="section level6">
 <h6>NOTE:</h6>
 <p>It was noted within the cleaning process that some species had very high counts of 99,999.</p>
@@ -327,8 +360,9 @@ birds_clean %&gt;%
 <hr />
 </div>
 </div>
-<div id="which-bird-had-the-highest-total-count-above-a-latitude-of--30" class="section level4">
-<h4>3. Which bird had the highest total count above a latitude of -30?</h4>
+</div>
+<div id="which-bird-had-the-highest-total-count-above-a-latitude-of--30" class="section level2">
+<h2>3. Which bird had the highest total count above a latitude of -30?</h2>
 <pre class="r"><code>birds_clean %&gt;% 
   
   filter(lat &gt; -30) %&gt;% 
@@ -365,10 +399,15 @@ birds_clean %&gt;%
 ## 17 Streaked shearwater              Calonectris le~ CALLEU                     1
 ## 18 Tahiti petrel                    Pseudobulweria~ PSEROS                     1
 ## 19 White-bellied storm petrel       Fregetta grall~ FREGRA                     1</code></pre>
-<p>The bird with the highest total count above latitude -30 was the <em>Wedge-tailed shearwater</em>, <em>Puffinus pacificus</em> or PUFPAC, with a total count of 855.</p>
+<div id="the-bird-with-the-highest-total-count-above-latitude--30-was-the-wedge-tailed-shearwater" class="section level4">
+<h4>The bird with the highest total count above latitude -30 was the <em>Wedge-tailed shearwater</em>,</h4>
 </div>
-<div id="how-many-different-types-of-birds-were-only-ever-seen-in-groups-of-1" class="section level4">
-<h4>4. How many different types of birds were only ever seen in groups of 1?</h4>
+<div id="puffinus-pacificus-or-pufpac-with-a-total-count-of-855." class="section level4">
+<h4><em>Puffinus pacificus</em> or PUFPAC, with a total count of 855.</h4>
+</div>
+</div>
+<div id="how-many-different-types-of-birds-were-only-ever-seen-in-groups-of-1" class="section level2">
+<h2>4. How many different types of birds were only ever seen in groups of 1?</h2>
 <p>i.e. how many species of birds were <strong>only</strong> ever seen alone. One way to determine this would be to generate a list of all the birds with a count of 1, then generate a list with a count &gt; 1 and to <code>anti_join</code> the two data sets so that any matches in species were removed.</p>
 <pre class="r"><code>solo_birds &lt;- birds_clean %&gt;% 
   
@@ -401,7 +440,7 @@ birds_clean %&gt;%
 ##  9 Crested penguin (unidentified)        
 ## 10 Flesh-footed / Wedge-tailed shearwater
 ## # ... with 16 more rows</code></pre>
-<p>This suggests that there were 26 bird species that were <strong>only</strong> ever sighted as solitary birds, <em>but</em> there are still some capitlised suffixes on some common names here which could be missed during the anti-join, so re-run the regex again;</p>
+<p>This suggests that there were 26 bird species that were <strong>only</strong> ever sighted as solitary birds, <em>but</em> there are still some capitalised suffixes on some common names here which could be missed during the anti-join, so re-run the regex again;</p>
 <pre class="r"><code>solo_birds &lt;- solo_birds %&gt;% 
   
   mutate(common_name = str_remove(common_name, &quot;\\s[A-Z]*[0-9]*$&quot;))
@@ -425,10 +464,12 @@ flock_birds &lt;- flock_birds %&gt;%
 ##  9 Flesh-footed / Wedge-tailed shearwater
 ## 10 Frigatebird (unidentified)            
 ## # ... with 13 more rows</code></pre>
-<p>This suggests there are <strong>23 species</strong> that were <strong>only</strong> ever seen in solitude.</p>
+<div id="this-suggests-there-are-23-species-that-were-only-ever-seen-in-solitude." class="section level4">
+<h4>This suggests there are <strong>23 species</strong> that were <strong>only</strong> ever seen in solitude.</h4>
 </div>
-<div id="how-many-penguins-were-seen-hint-there-are-many-types-of-penguin" class="section level4">
-<h4>5. How many penguins were seen? (Hint: there are many types of penguin)</h4>
+</div>
+<div id="how-many-penguins-were-seen-hint-there-are-many-types-of-penguin" class="section level2">
+<h2>5. How many penguins were seen? (Hint: there are many types of penguin)</h2>
 <pre class="r"><code>pattern &lt;- &quot; *[Pp]+[Ee]+[Nn]+[Gg]+[Uu]+[Ii]+[Nn] *&quot;
 
 
@@ -458,7 +499,8 @@ penguins_by_species</code></pre>
 ##   `sum(total_penguins_by_species)`
 ##                              &lt;dbl&gt;
 ## 1                              158</code></pre>
-<p>In total <strong>158 penguins</strong> were recorded.</p>
+<div id="in-total-158-penguins-were-recorded." class="section level4">
+<h4>In total <strong>158 penguins</strong> were recorded.</h4>
 </div>
 </div>
 

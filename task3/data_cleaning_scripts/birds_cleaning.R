@@ -17,10 +17,10 @@ here::here()
 # two sheets are needed from the .xls; "Bird data by record ID"
 # and "Ship data by record ID";
 
-bird_record <- read_xls("raw_data/seabirds.xls", sheet = "Bird data by record ID") %>% 
+bird_record <- read_xls(here("raw_data/seabirds.xls"), sheet = "Bird data by record ID") %>% 
                clean_names()
 
-ship_record <- read_xls("raw_data/seabirds.xls", sheet = "Ship data by record ID") %>% 
+ship_record <- read_xls(here("raw_data/seabirds.xls"), sheet = "Ship data by record ID") %>% 
                clean_names()
 
 # first look at the data ----
@@ -199,4 +199,14 @@ birds_joined_no_na <- birds_joined_no_na %>%
 # Save this as a clean data object ----
 
 birds_clean <- birds_joined_no_na %>%
-  write_csv("clean_data/birds_clean.csv")
+  write_csv(here("clean_data/birds_clean.csv"))
+
+# clean up the environment a little;
+
+rm(bird_record)
+
+rm(ship_record)
+
+rm(na_birds_joined)
+
+rm(na_count_col)

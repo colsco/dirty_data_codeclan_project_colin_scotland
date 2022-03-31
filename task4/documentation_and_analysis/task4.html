@@ -171,6 +171,19 @@ pre code {
 </div>
 
 
+<p>The cleaning script for this analysis is <code>halloween_candy_cleaning_script.R</code>. This cleaning script can be found in the <em>cleaning_script</em> folder and runs the following;</p>
+<ol style="list-style-type: decimal">
+<li>reads in three .csv files containing “trick or treat” data for 2015, 2016 and 2017</li>
+<li>removes unnecessary columns that are not needed for any analysis</li>
+<li>corrects the time format for 2017 and reduces all three data sets to show only the year</li>
+<li>changes the order of certain columns to set up for joining</li>
+<li>renames several columns to make the join easier</li>
+<li>performs a <code>full_join</code> to bring all the data into one data set while keeping all data</li>
+<li>saves a clean data set to a .csv file in the <em>clean_data</em> folder</li>
+<li>cleans up the environment</li>
+</ol>
+<p>In summary, the file structure is;</p>
+<p>Top level –&gt; .proj file –&gt; data_cleaning_scripts –&gt; .R script file –&gt; clean_data –&gt; clean .csv file –&gt; documentation_and_analysis –&gt; .Rmd and .html output file –&gt; raw_data –&gt; raw, uncleaned .csv/.xls files</p>
 <p>Set up libraries;</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
@@ -190,7 +203,7 @@ pre code {
 <pre class="r"><code>here::here()</code></pre>
 <pre><code>## [1] &quot;C:/Users/colin/Documents/CodeClan/dirty_data_codeclan_project_colin_scotland/task4&quot;</code></pre>
 <p>Source cleaning script;</p>
-<pre class="r"><code>source(&quot;data_cleaning_scripts/halloween_candy_cleaning_script.R&quot;)</code></pre>
+<pre class="r"><code>source(here(&quot;data_cleaning_scripts/halloween_candy_cleaning_script.R&quot;))</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;janitor&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:stats&#39;:
@@ -209,21 +222,16 @@ pre code {
 <h2>1. What is the total number of candy ratings given across three years.</h2>
 <div id="number-of-candy-ratings-not-the-number-of-raters.-dont-count-missing-values." class="section level3">
 <h3>(Number of candy ratings, not the number of raters. Don’t count missing values).</h3>
+<p>The first thing to do is to pivot the data into a longer form to allow easier analysis;</p>
 <pre class="r"><code># Add an ID column to keep track after pivoting;
 candy_all &lt;- candy_all %&gt;% 
   mutate(id = 1:nrow(candy_all), .before = &quot;year&quot;)
 
 
 candy_long &lt;- candy_all %&gt;% 
-  pivot_longer(cols = c(-id, -year, -age, -gender, -country, -going_out))
-
-
-
-
-
-
-
-candy_long_ratings &lt;- candy_long %&gt;% 
+  pivot_longer(cols = c(-id, -year, -age, -gender, -country, -going_out))</code></pre>
+<p>Then assign some values to <em>JOY</em>, <em>MEH</em> and <em>DESPAIR</em> to allow them to be counted;</p>
+<pre class="r"><code>candy_long_ratings &lt;- candy_long %&gt;% 
   
   mutate(num_ratings = if_else(value == &quot;(?i)JOY&quot; |
                                value == &quot;(?i)MEH&quot; |
@@ -274,7 +282,7 @@ candy_long_q1 %&gt;%
 </div>
 <div id="what-was-the-average-age-of-people-who-are-going-out-trick-or-treating" class="section level2">
 <h2>2. What was the average age of people who are going out trick or treating?</h2>
-<p>As a start it would be good to have the age column formatted as numeric;</p>
+<p>As a start it would be good to have the age column formatted as integers;</p>
 <pre class="r"><code>candy_all &lt;- candy_all %&gt;% 
   
   mutate(age = round(as.integer(age), digits = 1)) </code></pre>
@@ -282,7 +290,7 @@ candy_long_q1 %&gt;%
 <pre><code>## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion to integer
 ## range</code></pre>
 <p>Note: the “junk” age entries have been coerced into NAs during the <code>as.integer</code> change, leaving only numbers and NAs. This is <em>a good thing</em> in this case.</p>
-<p>In theory, a parent could take a baby trick or treating, and have answered the survey from their baby’s perspective, so ages &gt; 0 should be accepted. At the other end of the spectrum, the oldest person in the world is 119 years old, so anyone over 120 is lying.</p>
+<p>In theory, a parent could take a baby trick or treating, and have answered the survey from their baby’s perspective, so ages &gt; 0 should be accepted. At the other end of the spectrum, the oldest person in the world is reported to be 119 years old, so anyone aged 120 or over is lying.</p>
 <pre class="r"><code>candy_all &lt;- candy_all %&gt;% 
   filter(age &gt; 0 &amp; age &lt; 120)
 
@@ -324,7 +332,7 @@ candy_all %&gt;%
 ## 1 No       
 ## 2 Yes      
 ## 3 &lt;NA&gt;</code></pre>
-<pre class="r"><code># There are only &#39;Yes&#39; and &#39;No&#39;.
+<pre class="r"><code># There are only &#39;Yes&#39;, &#39;No&#39; and &#39;NA&#39;.
 
 candy_all %&gt;% 
   
@@ -334,8 +342,8 @@ candy_all %&gt;%
 ##   avg_age_out
 ##         &lt;dbl&gt;
 ## 1        35.1</code></pre>
-<div id="so-the-average-age-of-people-going-out-trick-or-treating-is-just-over-35-years-and-1-month." class="section level4">
-<h4>So the average age of people going out trick or treating is just over <strong>35 years and 1 month</strong>.</h4>
+<div id="so-the-average-age-of-people-going-out-trick-or-treating-is-just-over-35-years." class="section level4">
+<h4>So the average age of people going out trick or treating is just over <strong>35 years</strong>.</h4>
 </div>
 </div>
 <div id="what-was-the-average-age-of-people-not-going-trick-or-treating" class="section level2">
@@ -350,13 +358,13 @@ candy_all %&gt;%
 ##   avg_age_out
 ##         &lt;dbl&gt;
 ## 1        39.2</code></pre>
-<div id="the-average-age-of-people-going-out-trick-or-treating-is-just-under-39-years-and-2-months." class="section level4">
-<h4>The average age of people going out trick or treating is just under <strong>39 years and 2 months</strong>.</h4>
+<div id="the-average-age-of-people-going-out-trick-or-treating-is-just-over-39-years." class="section level4">
+<h4>The average age of people going out trick or treating is just over <strong>39 years</strong>.</h4>
 </div>
 </div>
 <div id="for-each-joy-despair-and-meh-which-candy-bar-received-the-most-of-these-ratings" class="section level2">
 <h2>4. For each joy, despair and meh, which candy bar received the most of these ratings?</h2>
-<p><em>To be honest I think there’s probably a more elegant way to present the results to this question </em> <em>rather than having three separate tables arranged in descending order - if I get time I’ll come back </em> <em>to it. <code>slice_max(all_the_whatever, n = 1)</code> wasn’t working for me for some reason.</em></p>
+<p>Basically, sum all the “JOY”, “MEH” and “DESPAIR” counts for each candy type and return the top scorer;</p>
 <pre class="r"><code>candy_rating_rates &lt;- candy_long_q1 %&gt;% 
   
   group_by(name, joy, meh, despair) %&gt;% 
@@ -432,13 +440,14 @@ candy_all %&gt;%
 ## # ... with 355 more rows</code></pre>
 <div id="the-candy-bar-with-the-most-ratings-of-each-kind-were" class="section level4">
 <h4>The candy bar with the most ratings of each kind were;</h4>
-<p><strong>JOY</strong> | Any reese_s_peanut_butter_cups | 7369 votes</p>
-<p><strong>MEH</strong> | Lollipops | 1570 votes</p>
-<p><strong>DESPAIR</strong> | Gum from baseball cards | 7341 votes</p>
+<p><strong>JOY</strong>: Any reese_s_peanut_butter_cups 7369 votes</p>
+<p><strong>MEH</strong>: Lollipops 1570 votes</p>
+<p><strong>DESPAIR</strong>: Gum from baseball cards 7341 votes</p>
 </div>
 </div>
 <div id="how-many-people-rated-starburst-as-despair" class="section level2">
 <h2>5. How many people rated Starburst as despair?</h2>
+<p>Filter on “starburst” and count the “DESPAIR”;</p>
 <pre class="r"><code>candy_rating_rates %&gt;% 
   
 select(name, all_the_despair) %&gt;% 
@@ -566,20 +575,20 @@ na_favourite &lt;- candy_long_q1 %&gt;%
 ## 1 reese_s_peanut_butter_cups         4890</code></pre>
 <div id="so-the-most-popular-sweets-by-gender-are" class="section level4">
 <h4>So the most popular sweets by gender are;</h4>
-<p><strong>Male:</strong> reese_s_peanut_butter_cups 1545 votes</p>
-<p><strong>Female: </strong> reese_s_peanut_butter_cups 837 votes</p>
-<p><strong>Other: </strong> kit_kat 34 votes</p>
-<p><strong>Prefer not to say:</strong> reese_s_peanut_butter_cups 69 votes</p>
-<p><strong>NA: </strong> reese_s_peanut_butter_cups 4890 votes</p>
+<p><strong>Male:</strong> reese’s peanut butter cups 1545 votes</p>
+<p><strong>Female: </strong> reese’s peanut butter cups 837 votes</p>
+<p><strong>Other: </strong> kit kat 34 votes</p>
+<p><strong>Prefer not to say:</strong> reese’s peanut butter cups 69 votes</p>
+<p><strong>NA: </strong> reese’s peanut butter cups 4890 votes</p>
 </div>
 <div id="now-that-ive-got-some-results-ive-just-realised-that-i-havent-used-the-system" class="section level3">
 <h3><em>Now that I’ve got some results I’ve just realised that I haven’t used the system </em></h3>
 </div>
-<div id="defined-by-the-task-of-setting-despair--1-meh-0-and-joy-1.-so-redo-the" class="section level3">
-<h3><em>defined by the task of setting despair = -1, meh = 0 and joy = +1. So redo the </em></h3>
+<div id="defined-by-the-task-of-setting-despair--1-meh-0-and-joy-1.-so-ill-redo-the" class="section level3">
+<h3><em>defined by the task of setting despair = -1, meh = 0 and joy = +1. So I’ll redo the </em></h3>
 </div>
-<div id="question-properly" class="section level3">
-<h3><em>question properly;</em></h3>
+<div id="question-properly-now" class="section level3">
+<h3><em>question properly now; 🙄</em></h3>
 <pre class="r"><code>candy_long_q6 &lt;- candy_long %&gt;% 
   
   # set up the scores for ratings;
@@ -677,11 +686,11 @@ q6_na &lt;- candy_long_q6 %&gt;%
 ## 1 reese_s_peanut_butter_cups         4890</code></pre>
 <div id="so-the-most-popular-sweets-by-gender-using-the-proper-system-are" class="section level4">
 <h4>So the most popular sweets by gender using the <em>proper</em> system are;</h4>
-<p><strong>Male:</strong> reese_s_peanut_butter_cups 1545 votes</p>
-<p><strong>Female: </strong> reese_s_peanut_butter_cups 837 votes</p>
-<p><strong>Other: </strong> kit_kat 34 votes</p>
-<p><strong>Prefer not to say:</strong> reese_s_peanut_butter_cups 69 votes</p>
-<p><strong>NA: </strong> reese_s_peanut_butter_cups 4890 votes</p>
+<p><strong>Male:</strong> reese’s peanut butter cups 1545 votes</p>
+<p><strong>Female: </strong> reese’s peanut butter cups 837 votes</p>
+<p><strong>Other: </strong> kit kat 34 votes</p>
+<p><strong>Prefer not to say:</strong> reese’s peanut butter cups 69 votes</p>
+<p><strong>NA: </strong> reese’s peanut butter cups 4890 votes</p>
 <p>…which is exactly the same as the result from <em>not</em> using the defined “system”, so at least they’re consistent!</p>
 </div>
 </div>
@@ -694,76 +703,226 @@ q6_na &lt;- candy_long_q6 %&gt;%
   
   group_by(name) %&gt;% 
   
-  summarise(top_2015 = sum(value_numeric, na.rm = TRUE)) 
+  summarise(top_2015 = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+  
+  arrange(desc(top_2015))
 
 slice_max(candy_long_2015, order_by = &quot;value_numeric&quot;, n = 1)</code></pre>
 <pre><code>## # A tibble: 1 x 2
-##   name        top_2015
-##   &lt;chr&gt;          &lt;dbl&gt;
-## 1 black_jacks    -3961</code></pre>
+##   name                       top_2015
+##   &lt;chr&gt;                         &lt;dbl&gt;
+## 1 reese_s_peanut_butter_cups     4375</code></pre>
 <pre class="r"><code>candy_long_2016 &lt;- candy_long_q6 %&gt;% 
   
   filter(year == &quot;2016&quot;) %&gt;%  
   
   group_by(name) %&gt;% 
   
-  summarise(top_2016 = sum(value_numeric, na.rm = TRUE)) 
+  summarise(top_2016 = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+  
+  arrange(desc(top_2016))
 
 slice_max(candy_long_2016, order_by = &quot;value_numeric&quot;, n = 1)</code></pre>
 <pre><code>## # A tibble: 1 x 2
-##   name        top_2016
-##   &lt;chr&gt;          &lt;dbl&gt;
-## 1 black_jacks     -437</code></pre>
+##   name    top_2016
+##   &lt;chr&gt;      &lt;dbl&gt;
+## 1 kit_kat      920</code></pre>
 <pre class="r"><code>candy_long_2017 &lt;- candy_long_q6 %&gt;% 
   
   filter(year == &quot;2017&quot;) %&gt;%  
   
   group_by(name) %&gt;% 
   
-  summarise(top_2017 = sum(value_numeric, na.rm = TRUE)) 
+  summarise(top_2017 = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+  
+  arrange(desc(top_2017))
 
 slice_max(candy_long_2017, order_by = &quot;value_numeric&quot;, n = 1)</code></pre>
 <pre><code>## # A tibble: 1 x 2
-##   name        top_2017
-##   &lt;chr&gt;          &lt;dbl&gt;
-## 1 black_jacks     -701</code></pre>
+##   name                       top_2017
+##   &lt;chr&gt;                         &lt;dbl&gt;
+## 1 reese_s_peanut_butter_cups     1403</code></pre>
 <div id="so-the-most-popular-sweets-by-year-are" class="section level4">
 <h4>So the most popular sweets by year are;</h4>
-<p><strong>2015:</strong> any_full_sized_candy_bar 4603 votes</p>
-<p><strong>2016:</strong> any_full_sized_candy_bar 1037 votes</p>
-<p><strong>2017: </strong> any_full_sized_candy_bar 1542 votes</p>
+<p><strong>2015:</strong> reese’s peanut butter cups 4375 votes</p>
+<p><strong>2016:</strong> kit kat 920 votes</p>
+<p><strong>2017:</strong> reese’s peanut butter cups 1403 votes</p>
 </div>
 </div>
 <div id="what-was-the-most-popular-candy-bar-by-this-rating-for-people-in-us-canada" class="section level2">
 <h2>8. What was the most popular candy bar by this rating for people in US, Canada,</h2>
 <p>UK and all other countries?</p>
-<pre class="r"><code>countries &lt;- candy_long %&gt;% 
+<p>First thing to do is to clean up the ‘country’ column;</p>
+<pre class="r"><code>#countries &lt;- candy_long %&gt;% 
   
-  distinct(country) %&gt;% 
-  arrange(country)
+#  distinct(country) %&gt;% 
+#  arrange(country)
+
+# Lowercase country names for simpler regex;
+
+countries &lt;- candy_long_q6 %&gt;% 
+  mutate(country = str_to_lower(country))
+
+
+  
+
 
 # UK cleanup ----
 
-regex_1 &lt;- countries %&gt;% 
-  mutate(fixed = str_replace_all(country, pattern = &quot;[Ee]n[dg]land|Scotland|(?i)u[:punct:]*k[:punct:]*|(?i)united king*dom&quot;, &quot;Great Britain&quot;)) 
+countries &lt;- countries %&gt;% 
+  mutate(country = str_replace_all(country, pattern = &quot;[Ee]n[dg]land|Scotland|(?i)u[:punct:]*k[:punct:]*|(?i)united king*dom&quot;, &quot;Great Britain&quot;)) 
 
 # Canada cleanup ----
+countries &lt;- countries %&gt;% 
+  mutate(country = str_replace_all(country, pattern = &quot;(?i)\\s*cana*d*a*e*[:symbol:]*|(?i)cascadia\\s*\\s*|(?i)Soviet Canuckistan&quot;, &quot;Canada&quot;))
 
-regex_1 &lt;- regex_1 %&gt;% 
-  mutate(fixed = str_replace_all(fixed, pattern = &quot;(?i)cana*d*a*e*|(?i)cascadia&quot;, &quot;Canada&quot;))
 
-# Other general cleans
+# USA cleanup ----
 
-#regex_1 &lt;- regex_1 %&gt;% 
-#  mutate(fixed = str_replace_all(fixed, pattern = &quot;[0-9]&quot;, is.na()))
+
+countries &lt;- countries %&gt;% 
   
+  mutate(country = str_remove_all(country, pattern = &quot;(?i)\\sof\\samerica&quot;)) 
+
+countries &lt;- countries %&gt;%                                     
+  mutate(country = str_remove_all(country, pattern = &quot;^USA[A-Za-z0-9\\s\\(\\)[:punct:][:symbol:]]{1,100}&quot;))  
+
+countries &lt;- countries %&gt;%                                    
+  mutate(country = str_replace_all(country, pattern = &quot;^[ahem]{0,4}[:punct:]{0,4}a*m+[eu]+r+[cir]+[aci]+[ak]*a*&quot;, &quot;USA&quot;))                             
+                                    
+countries &lt;- countries %&gt;%   
+  mutate(country = str_replace_all(country, pattern = 
+                                   &quot;u+n+i+t+e+d+\\s+s+t+a+t+e+s+|^u+\\s*s{1,2}+\\s*a*&quot;,
+                                   &quot;USA&quot;)) 
+
+countries &lt;- countries %&gt;%   
+  mutate(country = str_remove_all(country, pattern = &quot;^b+e+s+t+\\s+o+n+e+\\s+[:punct:]+\\s+&quot;))
+
+
+countries &lt;- countries %&gt;% 
+  mutate(country = str_replace_all(country, pattern = &quot;(?i)^u+s+a+[:punct:]*\\s*u*s*a*[:punct:]*\\s*u*s*a*[:punct:]*&quot;, &quot;USA&quot;))
+
+countries &lt;- countries %&gt;% 
+  mutate(country = str_replace_all(country, pattern = &quot;(?i)^u+\\.*s+\\.*a*\\.*\\s*u*s*a*&quot;, &quot;USA&quot;))
+
+countries &lt;- countries %&gt;% 
+  mutate(country = str_replace_all(country, pattern = &quot;(?i)i+\\s+p+r+e+t+e+n+d+\\s+[a-zA-Z\\s]{1,99}&quot;, &quot;USA&quot;))
+
+countries &lt;- countries %&gt;% 
+  mutate(country = str_replace_all(country, pattern = &quot;(?i)^usa[A-Za-z0-9\\s\\,\\.\\&#39;\\)]{1,80}&quot;, &quot;USA&quot;))
+
+countries &lt;- countries %&gt;% 
+  mutate(country = str_replace_all(country, pattern = &quot;(?i)^u+n+i+[et]+[des]+[sd]*\\s+s+[at]+[aest]+[et]+[es]+[asd]*&quot;, &quot;USA&quot;))
+
+countries &lt;- countries %&gt;%   
+  mutate(country = str_remove_all(country, pattern = &quot;(?i)^\\s*b+e+s+t+\\s+o+n+e+\\s+[:punct:]+\\s+&quot;))
+
+
+countries &lt;- countries %&gt;% 
+  mutate(country = str_replace_all(country, pattern = &quot;(?i)Alaska|California|North Carolina|Pittsburgh&quot;, &quot;USA&quot;))
+
+
+# first attempts; banished! ----
+#countries &lt;- countries %&gt;% 
+#  mutate(country = str_replace_all(country, pattern = &quot;(?i)T*h*e*[A-Za-z]*u+n+i+t+e+d+\\s+s+t+[ae]+t+e+s+\\s*of\\s*[Aa]merica[A-Za-z]*|(?i)[a-z]*USA[:punct:]*|[Nn][:punct:]\\s*America|(?i)usa+|(?i)america|^[A-Z][a-z]{3}[:punct:]{4}[A-Za-z]{6}|(?i)[:punct:]*[:symbol:]*m+[eu]+r+[ricka]*|(?i)unite*s*d*\\s*s*t*a*s*t*e*s+|New\\s+[JY][:alpha:]+$|^S+u+b........................|^I+\\sP+r+e+t+e+n+d+...........................................|[Tt]he\\s+[Bb]est\\s+[Oo]ne\\s*[:punct:]\\s*USA|[Uu]+[\\s\\.]+[Ss]+[\\s\\.]*\\s*[Aa]*\\s*\\.*|t[ae]+te+[ads]*$|USAUSA$|Alaska|California|North Carolina|Pittsburgh|^U+S+A+\\s*[:punct:]*[A-Za-z0-9]*[:punct:]*|(?i)U+S+A+\\s+O+f+A+&quot;, &quot;USA&quot;))
+
+#countries &lt;- countries %&gt;%  # break it up a bit for sanity&#39;s sake
+#  mutate(country = str_replace_all(country, pattern = &quot;^[:alpha:]+\\s+S+U+S+A+|^U+S+A+U+S+A+|U+s+|U+S+A+\\s+[Oo]+f+\\s+A+|U+S+A+a+|U+S+A+\\s*[:alpha:]+(?i)u+s+a+\\s*u*s*a*|\\s*U+S+A+\\s*U+S+A+\\s*U*S*A*\\s*|\\s*U+S+A+\\s*U+S+A+\\s*U*S*A*\\s*|^[A-Za-z0-9]*\\s*U+S+A+\\s*[\\,\\.]*[A-Za-z0-9]*[\\.\\,]*[A-Za-z0-9]*|^U+S+A+\\s*...\\s*$|USA\\s*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*|(?i)\\s*u+s+a+u+s+a+\\s*|(?i)u+s+a+\\stell\\sanymore\\.\\.&quot;,&quot;USA&quot;))
+
+#countries &lt;- countries %&gt;%  # break it up a bit more...
+ # mutate(country = str_replace_all(country, pattern = &quot;U+S+A+U+S+A+|(?i)USAI[A-Za-z\\s]{1,65}|U+S+A+[:punct:]+&quot;, &quot;USA&quot;))
+
+# Other general cleans: run this LAST ----
+
+countries &lt;- countries %&gt;%     # remove numerics and various randoms.
+  mutate(country = str_remove_all(country, pattern = &quot;\\d+[:punct:]*\\d*$|A [Tt]ropical [Ii]sland [Ss]outh [Oo]f [Tt]he [Ee]quator|[Nn]+o+t+\\s[Tt]*h*e*\\s*U+S+A+\\s+O*r*\\s*C+a+n+a+d+a+$|[Oo]ne\\sof\\sthe\\sbest\\sones|[Aa]tlantis|[Nn]arnia|[Dd]enial|[Ee]arth|[Ff]ear [Aa]nd [Ll]oathing|[Gg]od&#39;s [Cc]ountry|I [Dd]on&#39;t [Kk]now [Aa]nymore|[Ii]nsanity [Ll]ately|[Nn]everland|[Nn]ot [Tt]he USA [Oo]r Canada|[Oo]ne [Oo]f [Tt]he [Bb]est [Oo]nes|[Ss]ee [Aa]bove|[Ss]omewhere|(?i)subscribe to dm4uz3 on youtube|The Yoo Ess of Aaayyyyyy|there isn&#39;t one for old men|this one|Trumpistan|unhinged states|^A$|[Ee][Uu][Aa]|[Ee]urope|The |Republic [Oo]f\\s|U+d+|^\\s+|^[:punct:]|^[:symbol:]&quot;))
+
+countries &lt;- countries %&gt;% 
+  mutate(country = na_if(country, &quot;&quot;))      # change blank cells to NA
+
+countries &lt;- countries %&gt;% 
+  drop_na(country)
+
+#countries &lt;- countries %&gt;% 
+#  mutate()
+
+ # Capitalise country names;
+
+countries &lt;- countries %&gt;% 
+  mutate(country = str_to_title(country))</code></pre>
+<pre class="r"><code>candy_country &lt;- countries %&gt;% 
+  
+  filter(country == &quot;Usa&quot;) %&gt;%  
+  
+  group_by(name) %&gt;% 
+  
+  summarise(top_usa = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+  
+  arrange(desc(top_usa))
+
+slice_max(candy_country, order_by = &quot;value_numeric&quot;, n = 1)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   name                       top_usa
+##   &lt;chr&gt;                        &lt;dbl&gt;
+## 1 reese_s_peanut_butter_cups    1973</code></pre>
+<pre class="r"><code>candy_country &lt;- countries %&gt;% 
+  
+  filter(country == &quot;Great Britain&quot;) %&gt;%  
+  
+  group_by(name) %&gt;% 
+  
+  summarise(top_uk = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+  
+  arrange(desc(top_uk))
+
+slice_max(candy_country, order_by = &quot;value_numeric&quot;, n = 1)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   name          top_uk
+##   &lt;chr&gt;          &lt;dbl&gt;
+## 1 lindt_truffle     30</code></pre>
+<pre class="r"><code># this was a draw - how to separate these?
 
 
 
+candy_country &lt;- countries %&gt;% 
+  
+  filter(country == &quot;Canada&quot;) %&gt;%  
+  
+  group_by(name) %&gt;% 
+  
+  summarise(top_canada = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+  
+  arrange(desc(top_canada))
 
-#regex_1 &lt;- regex_1 %&gt;% 
-#  mutate(str_replace_all(country, pattern = &quot;(?i)[A-Za-z ]*u+n+i+t+e+d+ +s+t+a+t+e+s+[A-Za-z]*|(?i)[a-z]*USA[:punct:]*|N. #America|(?i)usa+|(?i)america|^[A-Z][a-z]{3}[:punct:]{4}[A-Za-z]{6}|(?i)m+[eu]+r+[ricka]*|(?i)i pretend [a-z0-9 [:punct:]]*&quot;
-#                     , &quot;USA&quot;))</code></pre>
+slice_max(candy_country, order_by = &quot;value_numeric&quot;, n = 1)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   name    top_canada
+##   &lt;chr&gt;        &lt;dbl&gt;
+## 1 kit_kat        233</code></pre>
+<pre class="r"><code>candy_country &lt;- countries %&gt;% 
+  
+  filter(country != &quot;Usa&quot; &amp; country != &quot;Canada&quot; &amp; country != &quot;Great Britain&quot;) %&gt;% 
+  
+  group_by(name) %&gt;% 
+  
+  summarise(top_other = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+  
+  arrange(desc(top_other))
+
+slice_max(candy_country, order_by = &quot;value_numeric&quot;, n = 1)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   name    top_other
+##   &lt;chr&gt;       &lt;dbl&gt;
+## 1 kit_kat        61</code></pre>
+<p>The regex cleaning is not perfect, and even after several attempts still had some small inaccuracies. However, the number of imperfectly tidied country names is a very small fraction of the overall and should not influence the results by a great deal.</p>
+<div id="so-our-result-by-country-is-as-follows" class="section level4">
+<h4>So our result by country is as follows;</h4>
+<p><strong>USA:</strong> reese’s peanut butter cups 1973 votes</p>
+<p><strong>UK:</strong> lindt truffle 30 votes</p>
+<p><strong>Canada:</strong> kit kat 233 votes</p>
+<p><strong>Other:</strong> kit kat 61 votes</p>
+<p>It should be noted that in the UK, rolos and toblerone also scored 30 votes, so there was a tie for first place.</p>
+</div>
 </div>
 
 
