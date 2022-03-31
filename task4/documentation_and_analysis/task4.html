@@ -745,7 +745,7 @@ q6_na &lt;- candy_long_q6 %&gt;%
      gender != &quot;PREFER NOT TO SAY&quot;) {
      stop(call. = FALSE, &quot;Error in input; select from &#39;male&#39;, &#39;female&#39;, &#39;other&#39;, &#39;prefer not to say&#39; or &#39;na&#39;!&quot;)
      }
-   
+  
   
   if(gender == &quot;male&quot; | gender == &quot;Male&quot; | gender == &quot;MALE&quot;)  {
   
@@ -819,7 +819,21 @@ q6_na &lt;- candy_long_q6 %&gt;%
   
   } 
   
-}</code></pre>
+}
+
+#attempt to streamline;
+
+#if(choose_gender == &quot;male&quot; | choose_gender == &quot;Male&quot; | choose_gender == &quot;MALE&quot;)  {
+  
+#  q6_joy &lt;- candy_long_q6 %&gt;% 
+    
+#  filter(gender == choose_gender) %&gt;%  #  &lt;-- falls apart here
+  
+#  summarise(total_joy = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+  
+#  arrange(desc(total_joy)) 
+  
+#  return(slice_max(q6_joy, order_by = &quot;total_joy&quot;, n = 1))</code></pre>
 <p>Do some testing on the function;</p>
 <pre class="r"><code>test_that(&quot;incorrect input returns an error&quot;, {
   expect_error(gender_joy(&quot;1999AD&quot;))

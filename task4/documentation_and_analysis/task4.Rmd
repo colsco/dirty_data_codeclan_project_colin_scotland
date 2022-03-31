@@ -508,7 +508,7 @@ gender_joy <- function(gender) {
      gender != "PREFER NOT TO SAY") {
      stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'prefer not to say' or 'na'!")
      }
-   
+  
   
   if(gender == "male" | gender == "Male" | gender == "MALE")  {
   
@@ -583,6 +583,20 @@ gender_joy <- function(gender) {
   } 
   
 }
+
+#attempt to streamline;
+
+#if(choose_gender == "male" | choose_gender == "Male" | choose_gender == "MALE")  {
+  
+#  q6_joy <- candy_long_q6 %>% 
+    
+#  filter(gender == choose_gender) %>%  #  <-- falls apart here
+  
+#  summarise(total_joy = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+#  arrange(desc(total_joy)) 
+  
+#  return(slice_max(q6_joy, order_by = "total_joy", n = 1))
 ```  
 
 
