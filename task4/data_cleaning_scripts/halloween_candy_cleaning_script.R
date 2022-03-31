@@ -224,6 +224,14 @@ candy_all <- full_join(candy_15_16_full, candy_2017)
 candy_all %>% 
    summarise(across(.fns = ~sum(is.na(.x))))
  
+# Quite a lot of NAs, but it looks like they shouldn't interfere with analysis too much.
+ 
+# save joined data set;
+ 
+# write_csv("clean_data/candy_all.csv")
+
+# clean up environment
+  
   rm(candy_15_16_full)
  
   rm(candy_2015)
