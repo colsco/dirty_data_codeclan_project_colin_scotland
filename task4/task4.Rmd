@@ -5,6 +5,19 @@ date: "29/03/2022"
 output: html_document
 ---
 
+The cleaning script for this analysis is `halloween_candy_cleaning_script.R`.  This
+cleaning script performs the following processes;
+- reads in three .csv files containing "trick or treat" data for 2015, 2016 and 2017
+- removes unnecessary columns that are not needed for any analysis
+- corrects the time format for 2017 and reduces all three data sets to show only the year
+- changes the order of certain columns to set up for joining
+- renames several columns to make the join easier
+- performs a `full_join` to bring all the data into one data set while keeping all data
+- cleans up the environment
+
+The first process done upon exiting the cleaning script and setting up the libraries in this
+Rmd file is to pivot the data into a longer form to allow easier analysis.
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -523,23 +536,23 @@ regex_1 <- regex_1 %>%
 
 # Canada cleanup ----
 regex_1 <- regex_1 %>% 
-  mutate(fixed = str_replace_all(fixed, pattern = "(?i)cana*d*a*e*[:symbol:]*|(?i)cascadia|(?i)Soviet Canuckistan", "Canada"))
+  mutate(fixed = str_replace_all(fixed, pattern = "(?i)\\s*cana*d*a*e*[:symbol:]*|(?i)cascadia\\s*\\s*|(?i)Soviet Canuckistan", "Canada"))
 
 
 # USA cleanup ----
 
 regex_1 <- regex_1 %>% 
-  mutate(fixed = str_replace_all(fixed, pattern = "(?i)T*h*e*[A-Za-z]*u+n+i+t+e+d+\\s+s+t+[ae]+t+e+s+\\s*of\\s*[Aa]merica[A-Za-z]*|(?i)[a-z]*USA[:punct:]*|[Nn][:punct:]\\s*America|(?i)usa+|(?i)america|^[A-Z][a-z]{3}[:punct:]{4}[A-Za-z]{6}|(?i)[:punct:]*[:symbol:]*m+[eu]+r+[ricka]*|(?i)unite*s*d*\\s*s*t*a*s*t*e*s+|New\\s+[JY][:alpha:]+$|Sub-Canadaian\\sNorth\\sUSA[:punct:]+\\s+USA|[Tt]he\\s+[Bb]est\\s+[Oo]ne\\s*[:punct:]\\s*USA|[Uu]+[\\s\\.]+[Ss]+[\\s\\.]*\\s*[Aa]*\\s*\\.*|t[ae]+te+[ads]*$|USAUSA$|Alaska|California|North Carolina|Pittsburgh|^U+S+A+\\s*[:punct:]*[A-Za-z0-9]*[:punct:]*|(?i)U+S+A+\\s+O+f+A+", "USA"))
+  mutate(fixed = str_replace_all(fixed, pattern = "(?i)T*h*e*[A-Za-z]*u+n+i+t+e+d+\\s+s+t+[ae]+t+e+s+\\s*of\\s*[Aa]merica[A-Za-z]*|(?i)[a-z]*USA[:punct:]*|[Nn][:punct:]\\s*America|(?i)usa+|(?i)america|^[A-Z][a-z]{3}[:punct:]{4}[A-Za-z]{6}|(?i)[:punct:]*[:symbol:]*m+[eu]+r+[ricka]*|(?i)unite*s*d*\\s*s*t*a*s*t*e*s+|New\\s+[JY][:alpha:]+$|^S+u+b........................|^I+\\sP+r+e+t+e+n+d+...........................................|[Tt]he\\s+[Bb]est\\s+[Oo]ne\\s*[:punct:]\\s*USA|[Uu]+[\\s\\.]+[Ss]+[\\s\\.]*\\s*[Aa]*\\s*\\.*|t[ae]+te+[ads]*$|USAUSA$|Alaska|California|North Carolina|Pittsburgh|^U+S+A+\\s*[:punct:]*[A-Za-z0-9]*[:punct:]*|(?i)U+S+A+\\s+O+f+A+", "USA"))
 
 regex_1 <- regex_1 %>% # break it up a bit for sanity's sake
-  mutate(fixed = str_replace_all(fixed, pattern = "^[:alpha:]+\\s+S+U+S+A+|^U+S+A+U+S+A+|U+s+|U+S+A+\\s+[Oo]+f+\\s+A+|U+S+A+a+|U+S+A+\\s*[:alpha:]+","USA"))
+  mutate(fixed = str_replace_all(fixed, pattern = "^[:alpha:]+\\s+S+U+S+A+|^U+S+A+U+S+A+|U+s+|U+S+A+\\s+[Oo]+f+\\s+A+|U+S+A+a+|U+S+A+\\s*[:alpha:]+(?i)u+s+a+\\s*u*s*a*|\\s*U+S+A+\\s*U+S+A+\\s*U*S*A*\\s*|\\s*U+S+A+\\s*U+S+A+\\s*U*S*A*\\s*|^[A-Za-z0-9]*\\s*U+S+A+\\s*[\\,\\.]*[A-Za-z0-9]*[\\.\\,]*[A-Za-z0-9]*|^U+S+A+\\s*...\\s*$|USA\\s*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*","USA"))
 
 
 
 # Other general cleans: run this LAST ----
 
 regex_1 <- regex_1 %>%      # remove numerics and various randoms.
-  mutate(fixed = str_remove_all(fixed, pattern = "\\d+[:punct:]*\\d*$|A [Tt]ropical [Ii]sland [Ss]outh [Oo]f [Tt]he [Ee]quator|[Nn]+o+t+\\s[Tt]*h*e*\\s*U+S+A+\\s+O*r*\\s*C+a+n+a+d+a+$|[Oo]ne\\sof\\sthe\\sbest\\sones|[Aa]tlantis|[Nn]arnia|[Dd]enial|[Ee]arth|[Ff]ear [Aa]nd [Ll]oathing|[Gg]od's [Cc]ountry|I [Dd]on't [Kk]now [Aa]nymore|[Ii]nsanity [Ll]ately|[Nn]everland|[Nn]ot [Tt]he USA [Oo]r Canada|[Oo]ne [Oo]f [Tt]he [Bb]est [Oo]nes|[Ss]ee [Aa]bove|[Ss]omewhere|(?i)subscribe to dm4uz3 on youtube|The Yoo Ess of Aaayyyyyy|there isn't one for old men|this one|Trumpistan|unhinged states|^A$|[Ee][Uu][Aa]|[Ee]urope|The |Republic [Oo]f|U+d+"))
+  mutate(fixed = str_remove_all(fixed, pattern = "\\d+[:punct:]*\\d*$|A [Tt]ropical [Ii]sland [Ss]outh [Oo]f [Tt]he [Ee]quator|[Nn]+o+t+\\s[Tt]*h*e*\\s*U+S+A+\\s+O*r*\\s*C+a+n+a+d+a+$|[Oo]ne\\sof\\sthe\\sbest\\sones|[Aa]tlantis|[Nn]arnia|[Dd]enial|[Ee]arth|[Ff]ear [Aa]nd [Ll]oathing|[Gg]od's [Cc]ountry|I [Dd]on't [Kk]now [Aa]nymore|[Ii]nsanity [Ll]ately|[Nn]everland|[Nn]ot [Tt]he USA [Oo]r Canada|[Oo]ne [Oo]f [Tt]he [Bb]est [Oo]nes|[Ss]ee [Aa]bove|[Ss]omewhere|(?i)subscribe to dm4uz3 on youtube|The Yoo Ess of Aaayyyyyy|there isn't one for old men|this one|Trumpistan|unhinged states|^A$|[Ee][Uu][Aa]|[Ee]urope|The |Republic [Oo]f\\s|U+d+|^\\s+|^[:punct:]|^[:symbol:]"))
 
 regex_1 <- regex_1 %>% 
   mutate(fixed = na_if(fixed, ""))      # change blank cells to NA
