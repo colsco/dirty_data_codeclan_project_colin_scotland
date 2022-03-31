@@ -776,7 +776,7 @@ countries &lt;- candy_long_q6 %&gt;%
 # UK cleanup ----
 
 countries &lt;- countries %&gt;% 
-  mutate(country = str_replace_all(country, pattern = &quot;[Ee]n[dg]land|Scotland|(?i)u[:punct:]*k[:punct:]*|(?i)united king*dom&quot;, &quot;Great Britain&quot;)) 
+  mutate(country = str_replace_all(country, pattern = &quot;[Ee]n[dg]land|[Ss]cotland|(?i)u[:punct:]*k[:punct:]*|(?i)united king*dom&quot;, &quot;Great Britain&quot;)) 
 
 # Canada cleanup ----
 countries &lt;- countries %&gt;% 
@@ -828,6 +828,8 @@ countries &lt;- countries %&gt;%
   mutate(country = str_replace_all(country, pattern = &quot;(?i)Alaska|California|North Carolina|Pittsburgh&quot;, &quot;USA&quot;))
 
 
+
+
 # first attempts; banished! ----
 #countries &lt;- countries %&gt;% 
 #  mutate(country = str_replace_all(country, pattern = &quot;(?i)T*h*e*[A-Za-z]*u+n+i+t+e+d+\\s+s+t+[ae]+t+e+s+\\s*of\\s*[Aa]merica[A-Za-z]*|(?i)[a-z]*USA[:punct:]*|[Nn][:punct:]\\s*America|(?i)usa+|(?i)america|^[A-Z][a-z]{3}[:punct:]{4}[A-Za-z]{6}|(?i)[:punct:]*[:symbol:]*m+[eu]+r+[ricka]*|(?i)unite*s*d*\\s*s*t*a*s*t*e*s+|New\\s+[JY][:alpha:]+$|^S+u+b........................|^I+\\sP+r+e+t+e+n+d+...........................................|[Tt]he\\s+[Bb]est\\s+[Oo]ne\\s*[:punct:]\\s*USA|[Uu]+[\\s\\.]+[Ss]+[\\s\\.]*\\s*[Aa]*\\s*\\.*|t[ae]+te+[ads]*$|USAUSA$|Alaska|California|North Carolina|Pittsburgh|^U+S+A+\\s*[:punct:]*[A-Za-z0-9]*[:punct:]*|(?i)U+S+A+\\s+O+f+A+&quot;, &quot;USA&quot;))
@@ -841,7 +843,7 @@ countries &lt;- countries %&gt;%
 # Other general cleans: run this LAST ----
 
 countries &lt;- countries %&gt;%     # remove numerics and various randoms.
-  mutate(country = str_remove_all(country, pattern = &quot;\\d+[:punct:]*\\d*$|A [Tt]ropical [Ii]sland [Ss]outh [Oo]f [Tt]he [Ee]quator|[Nn]+o+t+\\s[Tt]*h*e*\\s*U+S+A+\\s+O*r*\\s*C+a+n+a+d+a+$|[Oo]ne\\sof\\sthe\\sbest\\sones|[Aa]tlantis|[Nn]arnia|[Dd]enial|[Ee]arth|[Ff]ear [Aa]nd [Ll]oathing|[Gg]od&#39;s [Cc]ountry|I [Dd]on&#39;t [Kk]now [Aa]nymore|[Ii]nsanity [Ll]ately|[Nn]everland|[Nn]ot [Tt]he USA [Oo]r Canada|[Oo]ne [Oo]f [Tt]he [Bb]est [Oo]nes|[Ss]ee [Aa]bove|[Ss]omewhere|(?i)subscribe to dm4uz3 on youtube|The Yoo Ess of Aaayyyyyy|there isn&#39;t one for old men|this one|Trumpistan|unhinged states|^A$|[Ee][Uu][Aa]|[Ee]urope|The |Republic [Oo]f\\s|U+d+|^\\s+|^[:punct:]|^[:symbol:]&quot;))
+  mutate(country = str_remove_all(country, pattern = &quot;\\d+[:punct:]*\\d*$|(?i)[Nn]+o+t+\\s[Tt]*h*e*\\s*U+S+A+\\s+O*r*\\s*C+a+n+a+d+a+$|[Oo]ne\\sof\\sthe\\sbest\\sones|[Aa]tlantis|[Nn]arnia|[Dd]enial|[Ee]arth|[Ff]ear [Aa]nd [Ll]oathing|[Gg]od&#39;s [Cc]ountry|I [Dd]on&#39;t [Kk]now [Aa]nymore|[Ii]nsanity [Ll]ately|[Nn]everland|[Nn]ot [Tt]he USA [Oo]r Canada|[Oo]ne [Oo]f [Tt]he [Bb]est [Oo]nes|[Ss]ee [Aa]bove|[Ss]omewhere|(?i)subscribe to dm4uz3 on youtube|The Yoo Ess of Aaayyyyyy|there isn&#39;t one for old men|this one|Trumpistan|unhinged states|^A$|[Ee][Uu][Aa]|[Ee]urope|The |Republic [Oo]f\\s|U+d+|^\\s+|^[:punct:]|^[:symbol:]&quot;))
 
 countries &lt;- countries %&gt;% 
   mutate(country = na_if(country, &quot;&quot;))      # change blank cells to NA
@@ -885,7 +887,7 @@ slice_max(candy_country, order_by = &quot;value_numeric&quot;, n = 1)</code></pr
 <pre><code>## # A tibble: 1 x 2
 ##   name          top_uk
 ##   &lt;chr&gt;          &lt;dbl&gt;
-## 1 lindt_truffle     30</code></pre>
+## 1 lindt_truffle     33</code></pre>
 <pre class="r"><code># this was a draw - how to separate these?
 
 
@@ -919,15 +921,17 @@ slice_max(candy_country, order_by = &quot;value_numeric&quot;, n = 1)</code></pr
 <pre><code>## # A tibble: 1 x 2
 ##   name    top_other
 ##   &lt;chr&gt;       &lt;dbl&gt;
-## 1 kit_kat        61</code></pre>
+## 1 kit_kat        56</code></pre>
 <p>The regex cleaning is not perfect, and even after several attempts still had some small inaccuracies. However, the number of imperfectly tidied country names is a very small fraction of the overall and should not influence the results by a great deal.</p>
 <div id="so-our-result-by-country-is-as-follows" class="section level4">
 <h4>So our result by country is as follows;</h4>
 <p><strong>USA:</strong> reese’s peanut butter cups 1973 votes</p>
-<p><strong>UK:</strong> lindt truffle 30 votes</p>
+<p><strong>UK:</strong> lindt truffle / rolos / toblerone 33 votes</p>
 <p><strong>Canada:</strong> kit kat 233 votes</p>
-<p><strong>Other:</strong> kit kat 61 votes</p>
-<p>It should be noted that in the UK, rolos and toblerone also scored 30 votes, so there was a tie for first place.</p>
+<p><strong>Other:</strong> kit kat 56 votes</p>
+</div>
+<div id="note-a-3-way-tie-in-the-uk-between-lindt-truffles-rolos-and-toblerones." class="section level4">
+<h4>Note: a 3-way tie in the UK between lindt truffles, rolos and toblerones.</h4>
 </div>
 </div>
 

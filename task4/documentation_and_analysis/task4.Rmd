@@ -549,7 +549,7 @@ countries <- candy_long_q6 %>%
 # UK cleanup ----
 
 countries <- countries %>% 
-  mutate(country = str_replace_all(country, pattern = "[Ee]n[dg]land|Scotland|(?i)u[:punct:]*k[:punct:]*|(?i)united king*dom", "Great Britain")) 
+  mutate(country = str_replace_all(country, pattern = "[Ee]n[dg]land|[Ss]cotland|(?i)u[:punct:]*k[:punct:]*|(?i)united king*dom", "Great Britain")) 
 
 # Canada cleanup ----
 countries <- countries %>% 
@@ -601,6 +601,8 @@ countries <- countries %>%
   mutate(country = str_replace_all(country, pattern = "(?i)Alaska|California|North Carolina|Pittsburgh", "USA"))
 
 
+
+
 # first attempts; banished! ----
 #countries <- countries %>% 
 #  mutate(country = str_replace_all(country, pattern = "(?i)T*h*e*[A-Za-z]*u+n+i+t+e+d+\\s+s+t+[ae]+t+e+s+\\s*of\\s*[Aa]merica[A-Za-z]*|(?i)[a-z]*USA[:punct:]*|[Nn][:punct:]\\s*America|(?i)usa+|(?i)america|^[A-Z][a-z]{3}[:punct:]{4}[A-Za-z]{6}|(?i)[:punct:]*[:symbol:]*m+[eu]+r+[ricka]*|(?i)unite*s*d*\\s*s*t*a*s*t*e*s+|New\\s+[JY][:alpha:]+$|^S+u+b........................|^I+\\sP+r+e+t+e+n+d+...........................................|[Tt]he\\s+[Bb]est\\s+[Oo]ne\\s*[:punct:]\\s*USA|[Uu]+[\\s\\.]+[Ss]+[\\s\\.]*\\s*[Aa]*\\s*\\.*|t[ae]+te+[ads]*$|USAUSA$|Alaska|California|North Carolina|Pittsburgh|^U+S+A+\\s*[:punct:]*[A-Za-z0-9]*[:punct:]*|(?i)U+S+A+\\s+O+f+A+", "USA"))
@@ -614,7 +616,7 @@ countries <- countries %>%
 # Other general cleans: run this LAST ----
 
 countries <- countries %>%     # remove numerics and various randoms.
-  mutate(country = str_remove_all(country, pattern = "\\d+[:punct:]*\\d*$|A [Tt]ropical [Ii]sland [Ss]outh [Oo]f [Tt]he [Ee]quator|[Nn]+o+t+\\s[Tt]*h*e*\\s*U+S+A+\\s+O*r*\\s*C+a+n+a+d+a+$|[Oo]ne\\sof\\sthe\\sbest\\sones|[Aa]tlantis|[Nn]arnia|[Dd]enial|[Ee]arth|[Ff]ear [Aa]nd [Ll]oathing|[Gg]od's [Cc]ountry|I [Dd]on't [Kk]now [Aa]nymore|[Ii]nsanity [Ll]ately|[Nn]everland|[Nn]ot [Tt]he USA [Oo]r Canada|[Oo]ne [Oo]f [Tt]he [Bb]est [Oo]nes|[Ss]ee [Aa]bove|[Ss]omewhere|(?i)subscribe to dm4uz3 on youtube|The Yoo Ess of Aaayyyyyy|there isn't one for old men|this one|Trumpistan|unhinged states|^A$|[Ee][Uu][Aa]|[Ee]urope|The |Republic [Oo]f\\s|U+d+|^\\s+|^[:punct:]|^[:symbol:]"))
+  mutate(country = str_remove_all(country, pattern = "\\d+[:punct:]*\\d*$|(?i)[Nn]+o+t+\\s[Tt]*h*e*\\s*U+S+A+\\s+O*r*\\s*C+a+n+a+d+a+$|[Oo]ne\\sof\\sthe\\sbest\\sones|[Aa]tlantis|[Nn]arnia|[Dd]enial|[Ee]arth|[Ff]ear [Aa]nd [Ll]oathing|[Gg]od's [Cc]ountry|I [Dd]on't [Kk]now [Aa]nymore|[Ii]nsanity [Ll]ately|[Nn]everland|[Nn]ot [Tt]he USA [Oo]r Canada|[Oo]ne [Oo]f [Tt]he [Bb]est [Oo]nes|[Ss]ee [Aa]bove|[Ss]omewhere|(?i)subscribe to dm4uz3 on youtube|The Yoo Ess of Aaayyyyyy|there isn't one for old men|this one|Trumpistan|unhinged states|^A$|[Ee][Uu][Aa]|[Ee]urope|The |Republic [Oo]f\\s|U+d+|^\\s+|^[:punct:]|^[:symbol:]"))
 
 countries <- countries %>% 
   mutate(country = na_if(country, ""))      # change blank cells to NA
@@ -702,12 +704,11 @@ results by a great deal.
 
 **USA:**    reese's peanut butter cups	        1973 votes
 
-**UK:**     lindt truffle	                        30 votes
+**UK:**     lindt truffle / rolos / toblerone     33 votes
 
 **Canada:** kit kat	                             233 votes
 
-**Other:**  kit kat	                              61 votes	
-
-It should be noted that in the UK, rolos and toblerone also scored 30 votes, so there was a tie for first place.
+**Other:**  kit kat	                              56 votes	
 
 
+#### Note: a 3-way tie in the UK between lindt truffles, rolos and toblerones.
