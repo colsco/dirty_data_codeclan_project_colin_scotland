@@ -729,8 +729,11 @@ q6_na &lt;- candy_long_q6 %&gt;%
 <p>…which is exactly the same as the result from <em>not</em> using the defined “system”, so at least they’re consistent!</p>
 <hr />
 <p><em>It felt like there was a lot of repetition in writing the answer to this question,</em> <em>so I tried writing a function that would do the work for me.</em></p>
-<p><em>The function works as expected, - but in this case the function is longer than the</em> <em>original code, so I didn’t gain anything! Maybe this wasn’t the best place to use it…?</em></p>
-<pre class="r"><code>gender_joy &lt;- function(gender) {
+<p><em>The function works as expected, - but in this case the function is longer than the</em> <em>original code, so I didn’t gain anything.</em></p>
+<p><em>I tried to streamline the function and just about got there, but can’t get the result</em> <em>to return properly - see below.</em></p>
+<pre class="r"><code># first attempt
+
+gender_joy &lt;- function(gender) {
   
    if(!is.character(gender)) { # control non-character entries
     stop(call. = FALSE, &quot;Error in input; select from &#39;male&#39;, &#39;female&#39;, &#39;other&#39;, &#39;prefer not to say&#39; or &#39;na&#39;!&quot;)  
@@ -819,21 +822,7 @@ q6_na &lt;- candy_long_q6 %&gt;%
   
   } 
   
-}
-
-#attempt to streamline;
-
-#if(choose_gender == &quot;male&quot; | choose_gender == &quot;Male&quot; | choose_gender == &quot;MALE&quot;)  {
-  
-#  q6_joy &lt;- candy_long_q6 %&gt;% 
-    
-#  filter(gender == choose_gender) %&gt;%  #  &lt;-- falls apart here
-  
-#  summarise(total_joy = sum(value_numeric, na.rm = TRUE)) %&gt;% 
-  
-#  arrange(desc(total_joy)) 
-  
-#  return(slice_max(q6_joy, order_by = &quot;total_joy&quot;, n = 1))</code></pre>
+}</code></pre>
 <p>Do some testing on the function;</p>
 <pre class="r"><code>test_that(&quot;incorrect input returns an error&quot;, {
   expect_error(gender_joy(&quot;1999AD&quot;))
@@ -842,6 +831,47 @@ q6_na &lt;- candy_long_q6 %&gt;%
   expect_error(gender_joy(&quot;[a-zA-Z]&quot;))
 })</code></pre>
 <pre><code>## Test passed</code></pre>
+<pre class="r"><code>#attempt to streamline;
+
+#gender_joy &lt;- function(choose_gender) {
+  
+#   if(!is.character(choose_gender)) { # control non-character entries
+#    stop(call. = FALSE, &quot;Error in input; select from &#39;male&#39;, &#39;female&#39;, &#39;other&#39;, &#39;prefer not to say&#39; or &#39;na&#39;!&quot;)  
+#   }
+   
+#   if(choose_gender != &quot;male&quot; &amp; choose_gender != &quot;Male&quot; &amp; choose_gender != &quot;MALE&quot; &amp;
+#      choose_gender != &quot;female&quot; &amp; choose_gender != &quot;Female&quot; &amp; choose_gender != &quot;FEMALE&quot; &amp;
+#      choose_gender != &quot;other&quot; &amp; choose_gender != &quot;Other&quot; &amp; choose_gender != &quot;OTHER&quot; &amp;
+#      choose_gender != &quot;na&quot; &amp; choose_gender != &quot;Na&quot; &amp; choose_gender != &quot;NA&quot; &amp;
+#      choose_gender != &quot;prefer not to say&quot; &amp; 
+#      choose_gender != &quot;Prefer not to say&quot; &amp; 
+#      choose_gender != &quot;PREFER NOT TO SAY&quot;)     {
+#     stop(call. = FALSE, &quot;Error in input; select from &#39;male&#39;, &#39;female&#39;, &#39;other&#39;, &#39;prefer not to say&#39; or &#39;na&#39;!&quot;)
+     
+#    } else {
+  
+#  q6_joy &lt;- candy_long_q6 %&gt;% 
+    
+#  select(gender, name, value_numeric) %&gt;% 
+      
+#  filter(gender == choose_gender) %&gt;%
+    
+#  group_by(name) %&gt;% 
+  
+#  summarise(total_joy = sum(as.integer(value_numeric))) %&gt;% 
+  
+#  arrange(desc(total_joy)) 
+  
+#  return(slice_max(q6_joy, order_by = &quot;total_joy&quot;, n = 2))
+    
+#     }
+#  }</code></pre>
+<pre class="r"><code>#test_that(&quot;incorrect input returns an error&quot;, {
+#  expect_error(gender_joy(&quot;1999AD&quot;))
+#  expect_error(gender_joy(1234))
+#  expect_error(gender_joy(TRUE))
+#  expect_error(gender_joy(&quot;[a-zA-Z]&quot;))
+#})</code></pre>
 </div>
 </div>
 <div id="what-was-the-most-popular-candy-bar-in-each-year" class="section level2">

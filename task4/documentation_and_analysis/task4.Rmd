@@ -489,9 +489,13 @@ so at least they're consistent!
 *so I tried writing a function that would do the work for me.*
 
 *The function works as expected, - but in this case the function is longer than the*
-*original code, so I didn't gain anything!  Maybe this wasn't the best place to use it...?*
+*original code, so I didn't gain anything.*
+
+*I tried to streamline the function and just about got there, but can't get the result*
+*to return properly - see below.*
 
 ```{r}
+# first attempt
 
 gender_joy <- function(gender) {
   
@@ -583,20 +587,6 @@ gender_joy <- function(gender) {
   } 
   
 }
-
-#attempt to streamline;
-
-#if(choose_gender == "male" | choose_gender == "Male" | choose_gender == "MALE")  {
-  
-#  q6_joy <- candy_long_q6 %>% 
-    
-#  filter(gender == choose_gender) %>%  #  <-- falls apart here
-  
-#  summarise(total_joy = sum(value_numeric, na.rm = TRUE)) %>% 
-  
-#  arrange(desc(total_joy)) 
-  
-#  return(slice_max(q6_joy, order_by = "total_joy", n = 1))
 ```  
 
 
@@ -610,6 +600,59 @@ test_that("incorrect input returns an error", {
   expect_error(gender_joy("[a-zA-Z]"))
 })
 ```
+
+```{r}
+#attempt to streamline;
+
+#gender_joy <- function(choose_gender) {
+  
+#   if(!is.character(choose_gender)) { # control non-character entries
+#    stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'prefer not to say' or 'na'!")  
+#   }
+   
+#   if(choose_gender != "male" & choose_gender != "Male" & choose_gender != "MALE" &
+#      choose_gender != "female" & choose_gender != "Female" & choose_gender != "FEMALE" &
+#      choose_gender != "other" & choose_gender != "Other" & choose_gender != "OTHER" &
+#      choose_gender != "na" & choose_gender != "Na" & choose_gender != "NA" &
+#      choose_gender != "prefer not to say" & 
+#      choose_gender != "Prefer not to say" & 
+#      choose_gender != "PREFER NOT TO SAY")     {
+#     stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'prefer not to say' or 'na'!")
+     
+#    } else {
+  
+#  q6_joy <- candy_long_q6 %>% 
+    
+#  select(gender, name, value_numeric) %>% 
+      
+#  filter(gender == choose_gender) %>%
+    
+#  group_by(name) %>% 
+  
+#  summarise(total_joy = sum(as.integer(value_numeric))) %>% 
+  
+#  arrange(desc(total_joy)) 
+  
+#  return(slice_max(q6_joy, order_by = "total_joy", n = 2))
+    
+#     }
+#  }
+```
+
+
+```{r}
+#test_that("incorrect input returns an error", {
+#  expect_error(gender_joy("1999AD"))
+#  expect_error(gender_joy(1234))
+#  expect_error(gender_joy(TRUE))
+#  expect_error(gender_joy("[a-zA-Z]"))
+#})
+```
+
+
+
+
+
 
 ## 7. What was the most popular candy bar in each year?
 
