@@ -25,6 +25,21 @@ In summary, the file structure is;
 * documentation_and_analysis --> .Rmd and .html output file
 * raw_data --> raw, uncleaned .csv/.xls files
 
+The questions this analysis sets out to answer are;
+
+1. What is the total number of candy ratings given across the three years. 
+2. What was the average age of people who are going out trick or treating?
+3. What was the average age of people who are not going trick or treating?
+4. For each of joy, despair and meh, which candy bar revived the most of these ratings?
+5. How many people rated Starburst as despair?
+6. What was the most popular candy bar by this rating system for each gender in the dataset ?
+7. What was the most popular candy bar in each year?
+8. What was the most popular candy bar by this rating for people in US, Canada, UK, and all other countries?
+
+A function `gender_joy()` was written in an attempt to streamline the code for question 6, 
+and although it performed perfectly well, the coding for the function ended up being longer 
+than the coding for the original analysis and didn't provide any real advantage.
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -35,6 +50,7 @@ Set up libraries;
 library(tidyverse)
 library(here)
 library(assertr)
+library(testthat)
 ```
 
 Set 'home' directory;
@@ -218,7 +234,7 @@ candy_rating_rates %>%
 #### The candy bar with the most ratings of each kind were;
 
 
-**JOY**: Any reese_s_peanut_butter_cups     7369 votes
+**JOY**: Any reese's peanut butter cups     7369 votes
 
 **MEH**: Lollipops                          1570 votes
 
@@ -466,6 +482,120 @@ slice_max(na_favourite, order_by = "q6_na", n = 1)
 
 ...which is exactly the same as the result from *not* using the defined "system", 
 so at least they're consistent!
+
+--------------------------------------------------------------------------------
+
+*It felt like there was a lot of repetition in writing the answer to this question,*
+*so I tried writing a function that would do the work for me.*
+
+*The function works as expected, - but in this case the function is longer than the*
+*original code, so I didn't gain anything!  Maybe this wasn't the best place to use it...?*
+
+```{r}
+
+gender_joy <- function(gender) {
+  
+   if(!is.character(gender)) { # control non-character entries
+    stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'prefer not to say' or 'na'!")  
+   }
+   
+   if(gender != "male" & gender != "Male" & gender != "MALE" &
+      gender != "female" & gender != "Female" & gender != "FEMALE" &
+      gender != "other" & gender != "Other" & gender != "OTHER" &
+      gender != "na" & gender != "Na" & gender != "NA" &
+      gender != "prefer not to say" & 
+     gender != "Prefer not to say" & 
+     gender != "PREFER NOT TO SAY") {
+     stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'prefer not to say' or 'na'!")
+     }
+   
+  
+  if(gender == "male" | gender == "Male" | gender == "MALE")  {
+  
+  q6_male <- candy_long_q6 %>% 
+    
+  group_by(name) %>% 
+  
+  summarise(total_joy_male = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(total_joy_male)) 
+  
+  return(slice_max(male_favourite, order_by = "q6_male", n = 1))
+
+  }
+  
+  if(gender == "female" | gender == "Female" | gender == "FEMALE")  {
+  
+  q6_female <- candy_long_q6 %>% 
+    
+  group_by(name) %>% 
+  
+  summarise(total_joy_female = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(total_joy_female)) 
+  
+  return(slice_max(female_favourite, order_by = "q6_female", n = 1))
+  
+  }
+  
+  if(gender == "other" | gender == "Other" | gender == "OTHER")  {
+  
+  q6_other <- candy_long_q6 %>% 
+    
+  group_by(name) %>% 
+  
+  summarise(total_joy_other = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(total_joy_other)) 
+  
+  return(slice_max(other_favourite, order_by = "q6_other", n = 1))
+  
+  }
+  
+  if(gender == "prefer not to say" | 
+     gender == "Prefer not to say" | 
+     gender == "PREFER NOT TO SAY")  {
+  
+  q6_nosay <- candy_long_q6 %>% 
+    
+  group_by(name) %>% 
+  
+  summarise(total_joy_nosay = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(total_joy_nosay)) 
+  
+  return(slice_max(nosay_favourite, order_by = "q6_nosay", n = 1))
+  
+  }
+  
+  if(gender == "na" | gender == "Na" | gender == "NA")  {
+  
+  q6_na <- candy_long_q6 %>% 
+    
+  group_by(name) %>% 
+  
+  summarise(total_joy_na = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(total_joy_na)) 
+  
+  return(slice_max(na_favourite, order_by = "q6_male", n = 1))
+  
+  } 
+  
+}
+```  
+
+
+Do some testing on the function;
+
+```{r}
+test_that("incorrect input returns an error", {
+  expect_error(gender_joy("1999AD"))
+  expect_error(gender_joy(1234))
+  expect_error(gender_joy(TRUE))
+  expect_error(gender_joy("[a-zA-Z]"))
+})
+```
 
 ## 7. What was the most popular candy bar in each year?
 
