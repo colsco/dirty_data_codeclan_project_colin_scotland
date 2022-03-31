@@ -171,7 +171,7 @@ pre code {
 </div>
 
 
-<p>The cleaning script for this analysis is <code>halloween_candy_cleaning_script.R</code>. This cleaning script can be found in the <em>cleaning_script</em> folder and runs the following;</p>
+<p>The cleaning script for this analysis is <code>halloween_candy_cleaning_script.R</code>. This cleaning script can be found in the <em>data_cleaning_script</em> folder and runs the following;</p>
 <ol style="list-style-type: decimal">
 <li>reads in three .csv files containing “trick or treat” data for 2015, 2016 and 2017</li>
 <li>removes unnecessary columns that are not needed for any analysis</li>
@@ -183,7 +183,13 @@ pre code {
 <li>cleans up the environment</li>
 </ol>
 <p>In summary, the file structure is;</p>
-<p>Top level –&gt; .proj file –&gt; data_cleaning_scripts –&gt; .R script file –&gt; clean_data –&gt; clean .csv file –&gt; documentation_and_analysis –&gt; .Rmd and .html output file –&gt; raw_data –&gt; raw, uncleaned .csv/.xls files</p>
+<ul>
+<li>Top level –&gt; .proj file</li>
+<li>data_cleaning_scripts –&gt; .R script file</li>
+<li>clean_data –&gt; clean .csv file</li>
+<li>documentation_and_analysis –&gt; .Rmd and .html output file</li>
+<li>raw_data –&gt; raw, uncleaned .csv/.xls files</li>
+</ul>
 <p>Set up libraries;</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
@@ -580,15 +586,14 @@ na_favourite &lt;- candy_long_q1 %&gt;%
 <p><strong>Other: </strong> kit kat 34 votes</p>
 <p><strong>Prefer not to say:</strong> reese’s peanut butter cups 69 votes</p>
 <p><strong>NA: </strong> reese’s peanut butter cups 4890 votes</p>
+<div id="now-that-ive-got-some-results-ive-just-realised-that-i-havent-used-the-system" class="section level6">
+<h6><em>Now that I’ve got some results I’ve just realised that I haven’t used the system </em></h6>
 </div>
-<div id="now-that-ive-got-some-results-ive-just-realised-that-i-havent-used-the-system" class="section level3">
-<h3><em>Now that I’ve got some results I’ve just realised that I haven’t used the system </em></h3>
+<div id="defined-by-the-task-of-setting-despair--1-meh-0-and-joy-1.-so-ill-redo-the" class="section level6">
+<h6><em>defined by the task of setting despair = -1, meh = 0 and joy = +1. So I’ll redo the </em></h6>
 </div>
-<div id="defined-by-the-task-of-setting-despair--1-meh-0-and-joy-1.-so-ill-redo-the" class="section level3">
-<h3><em>defined by the task of setting despair = -1, meh = 0 and joy = +1. So I’ll redo the </em></h3>
-</div>
-<div id="question-properly-now" class="section level3">
-<h3><em>question properly now; 🙄</em></h3>
+<div id="question-properly-now" class="section level6">
+<h6><em>question properly now;</em></h6>
 <pre class="r"><code>candy_long_q6 &lt;- candy_long %&gt;% 
   
   # set up the scores for ratings;
@@ -684,6 +689,8 @@ q6_na &lt;- candy_long_q6 %&gt;%
 ##   name                       total_joy_na
 ##   &lt;chr&gt;                             &lt;int&gt;
 ## 1 reese_s_peanut_butter_cups         4890</code></pre>
+</div>
+</div>
 <div id="so-the-most-popular-sweets-by-gender-using-the-proper-system-are" class="section level4">
 <h4>So the most popular sweets by gender using the <em>proper</em> system are;</h4>
 <p><strong>Male:</strong> reese’s peanut butter cups 1545 votes</p>
@@ -692,7 +699,6 @@ q6_na &lt;- candy_long_q6 %&gt;%
 <p><strong>Prefer not to say:</strong> reese’s peanut butter cups 69 votes</p>
 <p><strong>NA: </strong> reese’s peanut butter cups 4890 votes</p>
 <p>…which is exactly the same as the result from <em>not</em> using the defined “system”, so at least they’re consistent!</p>
-</div>
 </div>
 </div>
 <div id="what-was-the-most-popular-candy-bar-in-each-year" class="section level2">

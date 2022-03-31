@@ -6,7 +6,7 @@ output: html_document
 ---
 
 The cleaning script for this analysis is `halloween_candy_cleaning_script.R`.  This
-cleaning script can be found in the *cleaning_script* folder and runs the following;
+cleaning script can be found in the *data_cleaning_script* folder and runs the following;
 
 1. reads in three .csv files containing "trick or treat" data for 2015, 2016 and 2017
 2. removes unnecessary columns that are not needed for any analysis
@@ -19,11 +19,11 @@ cleaning script can be found in the *cleaning_script* folder and runs the follow
 
 In summary, the file structure is;
 
-  Top level --> .proj file
-            --> data_cleaning_scripts --> .R script file
-            --> clean_data --> clean .csv file
-            --> documentation_and_analysis --> .Rmd and .html output file
-            --> raw_data --> raw, uncleaned .csv/.xls files
+* Top level --> .proj file
+* data_cleaning_scripts --> .R script file
+* clean_data --> clean .csv file
+* documentation_and_analysis --> .Rmd and .html output file
+* raw_data --> raw, uncleaned .csv/.xls files
 
 
 ```{r setup, include=FALSE}
@@ -355,9 +355,9 @@ slice_max(na_favourite, order_by = "total_joy_na", n = 1)
 
 
 
-### *Now that I've got some results I've just realised that I haven't used the system *
-### *defined by the task of setting despair = -1, meh = 0 and joy = +1.  So I'll redo the *
-### *question properly now; 🙄*
+###### *Now that I've got some results I've just realised that I haven't used the system *
+###### *defined by the task of setting despair = -1, meh = 0 and joy = +1.  So I'll redo the *
+###### *question properly now;* 
 
 ```{r}
 candy_long_q6 <- candy_long %>% 
