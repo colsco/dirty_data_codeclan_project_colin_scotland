@@ -518,53 +518,178 @@ slice_max(candy_long_2017, order_by = "value_numeric", n = 1)
 UK and all other countries?
 
 ```{r}
-countries <- candy_long %>% 
+#countries <- candy_long %>% 
   
-  distinct(country) %>% 
-  arrange(country)
+#  distinct(country) %>% 
+#  arrange(country)
 
-# Capitalise country names;
-regex_1 <- countries %>% 
-  mutate(country = str_to_title(country))
+# Lowercase country names for simpler regex;
+
+countries <- candy_long_q6 %>% 
+  mutate(country = str_to_lower(country))
+
+
   
 
 
 # UK cleanup ----
 
-regex_1 <- regex_1 %>% 
-  mutate(fixed = str_replace_all(country, pattern = "[Ee]n[dg]land|Scotland|(?i)u[:punct:]*k[:punct:]*|(?i)united king*dom", "Great Britain")) 
+countries <- countries %>% 
+  mutate(country = str_replace_all(country, pattern = "[Ee]n[dg]land|Scotland|(?i)u[:punct:]*k[:punct:]*|(?i)united king*dom", "Great Britain")) 
 
 # Canada cleanup ----
-regex_1 <- regex_1 %>% 
-  mutate(fixed = str_replace_all(fixed, pattern = "(?i)\\s*cana*d*a*e*[:symbol:]*|(?i)cascadia\\s*\\s*|(?i)Soviet Canuckistan", "Canada"))
+countries <- countries %>% 
+  mutate(country = str_replace_all(country, pattern = "(?i)\\s*cana*d*a*e*[:symbol:]*|(?i)cascadia\\s*\\s*|(?i)Soviet Canuckistan", "Canada"))
 
 
 # USA cleanup ----
 
-regex_1 <- regex_1 %>% 
-  mutate(fixed = str_replace_all(fixed, pattern = "(?i)T*h*e*[A-Za-z]*u+n+i+t+e+d+\\s+s+t+[ae]+t+e+s+\\s*of\\s*[Aa]merica[A-Za-z]*|(?i)[a-z]*USA[:punct:]*|[Nn][:punct:]\\s*America|(?i)usa+|(?i)america|^[A-Z][a-z]{3}[:punct:]{4}[A-Za-z]{6}|(?i)[:punct:]*[:symbol:]*m+[eu]+r+[ricka]*|(?i)unite*s*d*\\s*s*t*a*s*t*e*s+|New\\s+[JY][:alpha:]+$|^S+u+b........................|^I+\\sP+r+e+t+e+n+d+...........................................|[Tt]he\\s+[Bb]est\\s+[Oo]ne\\s*[:punct:]\\s*USA|[Uu]+[\\s\\.]+[Ss]+[\\s\\.]*\\s*[Aa]*\\s*\\.*|t[ae]+te+[ads]*$|USAUSA$|Alaska|California|North Carolina|Pittsburgh|^U+S+A+\\s*[:punct:]*[A-Za-z0-9]*[:punct:]*|(?i)U+S+A+\\s+O+f+A+", "USA"))
 
-regex_1 <- regex_1 %>% # break it up a bit for sanity's sake
-  mutate(fixed = str_replace_all(fixed, pattern = "^[:alpha:]+\\s+S+U+S+A+|^U+S+A+U+S+A+|U+s+|U+S+A+\\s+[Oo]+f+\\s+A+|U+S+A+a+|U+S+A+\\s*[:alpha:]+(?i)u+s+a+\\s*u*s*a*|\\s*U+S+A+\\s*U+S+A+\\s*U*S*A*\\s*|\\s*U+S+A+\\s*U+S+A+\\s*U*S*A*\\s*|^[A-Za-z0-9]*\\s*U+S+A+\\s*[\\,\\.]*[A-Za-z0-9]*[\\.\\,]*[A-Za-z0-9]*|^U+S+A+\\s*...\\s*$|USA\\s*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*","USA"))
+countries <- countries %>% 
+  
+  mutate(country = str_remove_all(country, pattern = "(?i)\\sof\\samerica")) 
+
+countries <- countries %>%                                     
+  mutate(country = str_remove_all(country, pattern = "^USA[A-Za-z0-9\\s\\(\\)[:punct:][:symbol:]]{1,100}"))  
+
+countries <- countries %>%                                    
+  mutate(country = str_replace_all(country, pattern = "^[ahem]{0,4}[:punct:]{0,4}a*m+[eu]+r+[cir]+[aci]+[ak]*a*", "USA"))                             
+                                    
+countries <- countries %>%   
+  mutate(country = str_replace_all(country, pattern = 
+                                   "u+n+i+t+e+d+\\s+s+t+a+t+e+s+|^u+\\s*s{1,2}+\\s*a*",
+                                   "USA")) 
+
+countries <- countries %>%   
+  mutate(country = str_remove_all(country, pattern = "^b+e+s+t+\\s+o+n+e+\\s+[:punct:]+\\s+"))
 
 
+countries <- countries %>% 
+  mutate(country = str_replace_all(country, pattern = "(?i)^u+s+a+[:punct:]*\\s*u*s*a*[:punct:]*\\s*u*s*a*[:punct:]*", "USA"))
+
+countries <- countries %>% 
+  mutate(country = str_replace_all(country, pattern = "(?i)^u+\\.*s+\\.*a*\\.*\\s*u*s*a*", "USA"))
+
+countries <- countries %>% 
+  mutate(country = str_replace_all(country, pattern = "(?i)i+\\s+p+r+e+t+e+n+d+\\s+[a-zA-Z\\s]{1,99}", "USA"))
+
+countries <- countries %>% 
+  mutate(country = str_replace_all(country, pattern = "(?i)^usa[A-Za-z0-9\\s\\,\\.\\'\\)]{1,80}", "USA"))
+
+countries <- countries %>% 
+  mutate(country = str_replace_all(country, pattern = "(?i)^u+n+i+[et]+[des]+[sd]*\\s+s+[at]+[aest]+[et]+[es]+[asd]*", "USA"))
+
+countries <- countries %>%   
+  mutate(country = str_remove_all(country, pattern = "(?i)^\\s*b+e+s+t+\\s+o+n+e+\\s+[:punct:]+\\s+"))
+
+
+countries <- countries %>% 
+  mutate(country = str_replace_all(country, pattern = "(?i)Alaska|California|North Carolina|Pittsburgh", "USA"))
+
+
+# first attempts; banished! ----
+#countries <- countries %>% 
+#  mutate(country = str_replace_all(country, pattern = "(?i)T*h*e*[A-Za-z]*u+n+i+t+e+d+\\s+s+t+[ae]+t+e+s+\\s*of\\s*[Aa]merica[A-Za-z]*|(?i)[a-z]*USA[:punct:]*|[Nn][:punct:]\\s*America|(?i)usa+|(?i)america|^[A-Z][a-z]{3}[:punct:]{4}[A-Za-z]{6}|(?i)[:punct:]*[:symbol:]*m+[eu]+r+[ricka]*|(?i)unite*s*d*\\s*s*t*a*s*t*e*s+|New\\s+[JY][:alpha:]+$|^S+u+b........................|^I+\\sP+r+e+t+e+n+d+...........................................|[Tt]he\\s+[Bb]est\\s+[Oo]ne\\s*[:punct:]\\s*USA|[Uu]+[\\s\\.]+[Ss]+[\\s\\.]*\\s*[Aa]*\\s*\\.*|t[ae]+te+[ads]*$|USAUSA$|Alaska|California|North Carolina|Pittsburgh|^U+S+A+\\s*[:punct:]*[A-Za-z0-9]*[:punct:]*|(?i)U+S+A+\\s+O+f+A+", "USA"))
+
+#countries <- countries %>%  # break it up a bit for sanity's sake
+#  mutate(country = str_replace_all(country, pattern = "^[:alpha:]+\\s+S+U+S+A+|^U+S+A+U+S+A+|U+s+|U+S+A+\\s+[Oo]+f+\\s+A+|U+S+A+a+|U+S+A+\\s*[:alpha:]+(?i)u+s+a+\\s*u*s*a*|\\s*U+S+A+\\s*U+S+A+\\s*U*S*A*\\s*|\\s*U+S+A+\\s*U+S+A+\\s*U*S*A*\\s*|^[A-Za-z0-9]*\\s*U+S+A+\\s*[\\,\\.]*[A-Za-z0-9]*[\\.\\,]*[A-Za-z0-9]*|^U+S+A+\\s*...\\s*$|USA\\s*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*[.\\(\\)\\,]*|(?i)\\s*u+s+a+u+s+a+\\s*|(?i)u+s+a+\\stell\\sanymore\\.\\.","USA"))
+
+#countries <- countries %>%  # break it up a bit more...
+ # mutate(country = str_replace_all(country, pattern = "U+S+A+U+S+A+|(?i)USAI[A-Za-z\\s]{1,65}|U+S+A+[:punct:]+", "USA"))
 
 # Other general cleans: run this LAST ----
 
-regex_1 <- regex_1 %>%      # remove numerics and various randoms.
-  mutate(fixed = str_remove_all(fixed, pattern = "\\d+[:punct:]*\\d*$|A [Tt]ropical [Ii]sland [Ss]outh [Oo]f [Tt]he [Ee]quator|[Nn]+o+t+\\s[Tt]*h*e*\\s*U+S+A+\\s+O*r*\\s*C+a+n+a+d+a+$|[Oo]ne\\sof\\sthe\\sbest\\sones|[Aa]tlantis|[Nn]arnia|[Dd]enial|[Ee]arth|[Ff]ear [Aa]nd [Ll]oathing|[Gg]od's [Cc]ountry|I [Dd]on't [Kk]now [Aa]nymore|[Ii]nsanity [Ll]ately|[Nn]everland|[Nn]ot [Tt]he USA [Oo]r Canada|[Oo]ne [Oo]f [Tt]he [Bb]est [Oo]nes|[Ss]ee [Aa]bove|[Ss]omewhere|(?i)subscribe to dm4uz3 on youtube|The Yoo Ess of Aaayyyyyy|there isn't one for old men|this one|Trumpistan|unhinged states|^A$|[Ee][Uu][Aa]|[Ee]urope|The |Republic [Oo]f\\s|U+d+|^\\s+|^[:punct:]|^[:symbol:]"))
+countries <- countries %>%     # remove numerics and various randoms.
+  mutate(country = str_remove_all(country, pattern = "\\d+[:punct:]*\\d*$|A [Tt]ropical [Ii]sland [Ss]outh [Oo]f [Tt]he [Ee]quator|[Nn]+o+t+\\s[Tt]*h*e*\\s*U+S+A+\\s+O*r*\\s*C+a+n+a+d+a+$|[Oo]ne\\sof\\sthe\\sbest\\sones|[Aa]tlantis|[Nn]arnia|[Dd]enial|[Ee]arth|[Ff]ear [Aa]nd [Ll]oathing|[Gg]od's [Cc]ountry|I [Dd]on't [Kk]now [Aa]nymore|[Ii]nsanity [Ll]ately|[Nn]everland|[Nn]ot [Tt]he USA [Oo]r Canada|[Oo]ne [Oo]f [Tt]he [Bb]est [Oo]nes|[Ss]ee [Aa]bove|[Ss]omewhere|(?i)subscribe to dm4uz3 on youtube|The Yoo Ess of Aaayyyyyy|there isn't one for old men|this one|Trumpistan|unhinged states|^A$|[Ee][Uu][Aa]|[Ee]urope|The |Republic [Oo]f\\s|U+d+|^\\s+|^[:punct:]|^[:symbol:]"))
 
-regex_1 <- regex_1 %>% 
-  mutate(fixed = na_if(fixed, ""))      # change blank cells to NA
+countries <- countries %>% 
+  mutate(country = na_if(country, ""))      # change blank cells to NA
 
+countries <- countries %>% 
+  drop_na(country)
 
+#countries <- countries %>% 
+#  mutate()
 
+ # Capitalise country names;
 
-
-
+countries <- countries %>% 
+  mutate(country = str_to_title(country))
 
 
   
+
 ```
 
+```{r}
+candy_country <- countries %>% 
+  
+  filter(country == "Usa") %>%  
+  
+  group_by(name) %>% 
+  
+  summarise(top_usa = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(top_usa))
 
+slice_max(candy_country, order_by = "value_numeric", n = 1)
+
+
+
+candy_country <- countries %>% 
+  
+  filter(country == "Great Britain") %>%  
+  
+  group_by(name) %>% 
+  
+  summarise(top_uk = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(top_uk))
+
+slice_max(candy_country, order_by = "value_numeric", n = 1)
+
+# this was a draw - how to separate these?
+
+
+
+candy_country <- countries %>% 
+  
+  filter(country == "Canada") %>%  
+  
+  group_by(name) %>% 
+  
+  summarise(top_canada = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(top_canada))
+
+slice_max(candy_country, order_by = "value_numeric", n = 1)
+
+
+
+candy_country <- countries %>% 
+  
+  filter(country != "Usa" & country != "Canada" & country != "Great Britain") %>% 
+  
+  group_by(name) %>% 
+  
+  summarise(top_other = sum(value_numeric, na.rm = TRUE)) %>% 
+  
+  arrange(desc(top_other))
+
+slice_max(candy_country, order_by = "value_numeric", n = 1)
+  
+```
+The regex cleaning is not perfect, and even after several attempts still had some small inaccuracies.  However, 
+the number of imperfectly tidied country names is a very small part of the overall and should not influence the
+results too much.
+
+
+#### So our result by country is as follows;
+
+**USA:**    reese's peanut butter cups	        1973 votes
+
+**UK:**     lindt truffle	                        30 votes
+
+**Canada:** kit kat	                             233 votes
+
+**Other:**  kit kat	                              61 votes	
