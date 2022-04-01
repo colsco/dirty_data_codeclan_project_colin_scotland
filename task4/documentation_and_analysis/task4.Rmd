@@ -37,8 +37,11 @@ The questions this analysis sets out to answer are;
 8. What was the most popular candy bar by this rating for people in US, Canada, UK, and all other countries?
 
 A function `gender_joy()` was written in an attempt to streamline the code for question 6, 
-and although it performed perfectly well, the coding for the function ended up being longer 
-than the coding for the original analysis and didn't provide any real advantage.
+and although the first attempt performed perfectly well, the coding for the function ended up 
+being longer than the coding for the original analysis and didn't provide any real advantage.
+
+Shortening the function worked up to a point, but wasn't successful in returning results before
+the project had to be submitted.
 
 
 ```{r setup, include=FALSE}
