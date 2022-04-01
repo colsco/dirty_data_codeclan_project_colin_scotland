@@ -496,35 +496,33 @@ so at least they're consistent!
 
 
 ```{r}
-#attempt to streamline the above function; couldn't get a return and ran out of time to figure it out.
+# attempt to streamline the above function; couldn't get a return and ran out of time to figure it out.
 
 # gender_joy <- function(choose_gender) {
   
 #   if(!is.character(choose_gender)) { # control non-character entries
-#    stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'prefer not to say' or 'na'!")  
+#    stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'I'd rather not say' or 'na'!")  
 #   }
  
-#   if(choose_gender != "male" & choose_gender != "Male" & choose_gender != "MALE" &
+# if(choose_gender != "male" & choose_gender != "Male" & choose_gender != "MALE" &
 #      choose_gender != "female" & choose_gender != "Female" & choose_gender != "FEMALE" &
 #      choose_gender != "other" & choose_gender != "Other" & choose_gender != "OTHER" &
 #      choose_gender != "na" & choose_gender != "Na" & choose_gender != "NA" &
-#      choose_gender != "prefer not to say" & 
-#      choose_gender != "Prefer not to say" & 
-#      choose_gender != "PREFER NOT TO SAY")     {
+#      choose_gender != "I'd rather not say" & 
+#      choose_gender != "i'd rather not say" & 
+#      choose_gender != "I'D RATHER NOT SAY")     {
 #     stop(call. = FALSE, "Error in input; select from 'Male', 'Female', 'Other', 'Prefer not to say' or 'Na'!")
-   
+ 
 #    } else {
-
 #  if(choose_gender != "na" & choose_gender != "Na" & choose_gender != "NA") {
-    
+  
 #  q6_joy <- candy_long_q6 %>% 
+
+# select(gender, name, value_numeric) %>% 
   
-#  select(gender, name, value_numeric) %>% 
-    
-#  filter(gender == str_to_title(choose_gender)) %>%  
-  # str_to_title doesn't work for "Prefer not to say" - work in progress...
-  
-#  group_by(name) %>% 
+#  filter(gender == choose_gender) %>%  
+
+# group_by(name) %>% 
     
 #  summarise(total_joy = sum(value_numeric, na.rm = TRUE)) %>% 
 

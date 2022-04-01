@@ -201,7 +201,8 @@ pre code {
 <li>What was the most popular candy bar in each year?</li>
 <li>What was the most popular candy bar by this rating for people in US, Canada, UK, and all other countries?</li>
 </ol>
-<p>A function <code>gender_joy()</code> was written in an attempt to streamline the code for question 6, and although the function works, the results are slightly different to the original analysis. The reason for this still isn’t clear at the time of submission to Github.</p>
+<p>A function <code>gender_joy()</code> was written in an attempt to streamline the code for question 6, and although the function “works”, it is still incomplete.*</p>
+<p>The results from the function are slightly different to the original analysis and the arguments need to be set up correctly in terms of uppercase/lowercase. This is still work in progress at the time of submission to Github.</p>
 <p>Set up libraries;</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
@@ -730,35 +731,33 @@ q6_na &lt;- candy_long_q6 %&gt;%
 <hr />
 <p><em>It felt like there was a lot of repetition in writing the answer to this question,</em> <em>so I tried writing a function that would do the work for me.</em></p>
 <p><em>The function isn’t quite working yet (input formats still to be sorted) and wasn’t</em> <em>100% functional when this project had to be submitted to Github…</em></p>
-<pre class="r"><code>#attempt to streamline the above function; couldn&#39;t get a return and ran out of time to figure it out.
+<pre class="r"><code># attempt to streamline the above function; couldn&#39;t get a return and ran out of time to figure it out.
 
 # gender_joy &lt;- function(choose_gender) {
   
 #   if(!is.character(choose_gender)) { # control non-character entries
-#    stop(call. = FALSE, &quot;Error in input; select from &#39;male&#39;, &#39;female&#39;, &#39;other&#39;, &#39;prefer not to say&#39; or &#39;na&#39;!&quot;)  
+#    stop(call. = FALSE, &quot;Error in input; select from &#39;male&#39;, &#39;female&#39;, &#39;other&#39;, &#39;I&#39;d rather not say&#39; or &#39;na&#39;!&quot;)  
 #   }
  
-#   if(choose_gender != &quot;male&quot; &amp; choose_gender != &quot;Male&quot; &amp; choose_gender != &quot;MALE&quot; &amp;
+# if(choose_gender != &quot;male&quot; &amp; choose_gender != &quot;Male&quot; &amp; choose_gender != &quot;MALE&quot; &amp;
 #      choose_gender != &quot;female&quot; &amp; choose_gender != &quot;Female&quot; &amp; choose_gender != &quot;FEMALE&quot; &amp;
 #      choose_gender != &quot;other&quot; &amp; choose_gender != &quot;Other&quot; &amp; choose_gender != &quot;OTHER&quot; &amp;
 #      choose_gender != &quot;na&quot; &amp; choose_gender != &quot;Na&quot; &amp; choose_gender != &quot;NA&quot; &amp;
-#      choose_gender != &quot;prefer not to say&quot; &amp; 
-#      choose_gender != &quot;Prefer not to say&quot; &amp; 
-#      choose_gender != &quot;PREFER NOT TO SAY&quot;)     {
+#      choose_gender != &quot;I&#39;d rather not say&quot; &amp; 
+#      choose_gender != &quot;i&#39;d rather not say&quot; &amp; 
+#      choose_gender != &quot;I&#39;D RATHER NOT SAY&quot;)     {
 #     stop(call. = FALSE, &quot;Error in input; select from &#39;Male&#39;, &#39;Female&#39;, &#39;Other&#39;, &#39;Prefer not to say&#39; or &#39;Na&#39;!&quot;)
-   
+ 
 #    } else {
-
 #  if(choose_gender != &quot;na&quot; &amp; choose_gender != &quot;Na&quot; &amp; choose_gender != &quot;NA&quot;) {
-    
+  
 #  q6_joy &lt;- candy_long_q6 %&gt;% 
+
+# select(gender, name, value_numeric) %&gt;% 
   
-#  select(gender, name, value_numeric) %&gt;% 
-    
-#  filter(gender == str_to_title(choose_gender)) %&gt;%  
-  # str_to_title doesn&#39;t work for &quot;Prefer not to say&quot; - work in progress...
-  
-#  group_by(name) %&gt;% 
+#  filter(gender == choose_gender) %&gt;%  
+
+# group_by(name) %&gt;% 
     
 #  summarise(total_joy = sum(value_numeric, na.rm = TRUE)) %&gt;% 
 
