@@ -40,8 +40,8 @@ A function `gender_joy()` was written in an attempt to streamline the code for q
 and although the first attempt performed perfectly well, the coding for the function ended up 
 being longer than the coding for the original analysis and didn't provide any real advantage.
 
-Shortening the function worked up to a point, but wasn't successful in returning results before
-the project had to be submitted.
+Shortening the function worked up to a point, but isn't returning expected results at the time
+of submission to Github.
 
 
 ```{r setup, include=FALSE}
@@ -100,7 +100,7 @@ candy_long_ratings
   
 ```
 
-#### There are **603883** ratings of sweets across the three years.  
+#### 1. There are **603883** ratings of sweets across the three years.  
 
 These can also be broken down further to show how many of each type there were;
 
@@ -182,7 +182,7 @@ candy_all %>%
   summarise(avg_age_out = mean(age, na.rm = TRUE))
 ```
 
-#### So the average age of people going out trick or treating is just over **35 years**.
+#### 2. So the average age of people going out trick or treating is just over **35 years**.
 
 ## 3. What was the average age of people **not** going trick or treating?
 
@@ -196,7 +196,7 @@ candy_all %>%
   summarise(avg_age_out = mean(age, na.rm = TRUE))
 ```
 
-#### The average age of people going out trick or treating is just over **39 years**.
+#### 3. The average age of people going out trick or treating is just over **39 years**.
 
 ## 4. For each joy, despair and meh, which candy bar received the most of these ratings?
 
@@ -234,7 +234,7 @@ candy_rating_rates %>%
   
 ```
 
-#### The candy bar with the most ratings of each kind were;
+#### 4. The candy bar with the most ratings of each kind were;
 
 
 **JOY**: Any reese's peanut butter cups     7369 votes
@@ -256,7 +256,7 @@ select(name, all_the_despair) %>%
 filter(name == "starburst" & all_the_despair > 0)
 ```
 
-#### There were **1990 votes of 'despair'** for Starburst.
+#### 5. There were **1990 votes of 'despair'** for Starburst.
 
 ## 6. What was the most popular candy bar by this rating system for each gender in the data set?
 
@@ -360,7 +360,7 @@ slice_max(na_favourite, order_by = "total_joy_na", n = 1)
 
 ```
 
-#### So the most popular sweets by gender are;
+#### 6(i). So the most popular sweets by gender are;
 
 **Male:**                  reese's peanut butter cups	            1545 votes
 
@@ -471,7 +471,7 @@ slice_max(nosay_favourite, order_by = "q6_nosay", n = 1)
 slice_max(na_favourite, order_by = "q6_na", n = 1)
 ```
 
-#### So the most popular sweets by gender using the *proper* system are;
+#### 6(ii). So the most popular sweets by gender using the *proper* system are;
 
 **Male:**                  reese's peanut butter cups	            1545 votes
 
@@ -498,121 +498,121 @@ so at least they're consistent!
 *to return properly - see below.*
 
 ```{r}
-# first attempt
+# first attempt at function - wraps above code into a function framework - works ok,  but very verbose!
 
-gender_joy <- function(gender) {
+#gender_joy <- function(gender) {
   
-   if(!is.character(gender)) { # control non-character entries
-    stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'prefer not to say' or 'na'!")  
-   }
+#   if(!is.character(gender)) { # control non-character entries
+#    stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'prefer not to say' or 'na'!")  
+#   }
    
-   if(gender != "male" & gender != "Male" & gender != "MALE" &
-      gender != "female" & gender != "Female" & gender != "FEMALE" &
-      gender != "other" & gender != "Other" & gender != "OTHER" &
-      gender != "na" & gender != "Na" & gender != "NA" &
-      gender != "prefer not to say" & 
-     gender != "Prefer not to say" & 
-     gender != "PREFER NOT TO SAY") {
-     stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'prefer not to say' or 'na'!")
-     }
+#   if(gender != "male" & gender != "Male" & gender != "MALE" &
+#      gender != "female" & gender != "Female" & gender != "FEMALE" &
+#      gender != "other" & gender != "Other" & gender != "OTHER" &
+#      gender != "na" & gender != "Na" & gender != "NA" &
+#      gender != "prefer not to say" & 
+#     gender != "Prefer not to say" & 
+#     gender != "PREFER NOT TO SAY") {
+#     stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'prefer not to say' or 'na'!")
+#     }
   
   
-  if(gender == "male" | gender == "Male" | gender == "MALE")  {
+#  if(gender == "male" | gender == "Male" | gender == "MALE")  {
   
-  q6_male <- candy_long_q6 %>% 
+#  q6_male <- candy_long_q6 %>% 
     
-  group_by(name) %>% 
+#  group_by(name) %>% 
   
-  summarise(total_joy_male = sum(value_numeric, na.rm = TRUE)) %>% 
+#  summarise(total_joy_male = sum(value_numeric, na.rm = TRUE)) %>% 
   
-  arrange(desc(total_joy_male)) 
+#  arrange(desc(total_joy_male)) 
   
-  return(slice_max(male_favourite, order_by = "q6_male", n = 1))
+#  return(slice_max(male_favourite, order_by = "q6_male", n = 1))
 
-  }
+#  }
   
-  if(gender == "female" | gender == "Female" | gender == "FEMALE")  {
+#  if(gender == "female" | gender == "Female" | gender == "FEMALE")  {
   
-  q6_female <- candy_long_q6 %>% 
+#  q6_female <- candy_long_q6 %>% 
     
-  group_by(name) %>% 
+#  group_by(name) %>% 
   
-  summarise(total_joy_female = sum(value_numeric, na.rm = TRUE)) %>% 
+#  summarise(total_joy_female = sum(value_numeric, na.rm = TRUE)) %>% 
   
-  arrange(desc(total_joy_female)) 
+#  arrange(desc(total_joy_female)) 
   
-  return(slice_max(female_favourite, order_by = "q6_female", n = 1))
+#  return(slice_max(female_favourite, order_by = "q6_female", n = 1))
   
-  }
+#  }
   
-  if(gender == "other" | gender == "Other" | gender == "OTHER")  {
+#  if(gender == "other" | gender == "Other" | gender == "OTHER")  {
   
-  q6_other <- candy_long_q6 %>% 
+#  q6_other <- candy_long_q6 %>% 
     
-  group_by(name) %>% 
+#  group_by(name) %>% 
   
-  summarise(total_joy_other = sum(value_numeric, na.rm = TRUE)) %>% 
+#  summarise(total_joy_other = sum(value_numeric, na.rm = TRUE)) %>% 
   
-  arrange(desc(total_joy_other)) 
+#  arrange(desc(total_joy_other)) 
   
-  return(slice_max(other_favourite, order_by = "q6_other", n = 1))
+#  return(slice_max(other_favourite, order_by = "q6_other", n = 1))
   
-  }
+#  }
   
-  if(gender == "prefer not to say" | 
-     gender == "Prefer not to say" | 
-     gender == "PREFER NOT TO SAY")  {
+#  if(gender == "prefer not to say" | 
+#     gender == "Prefer not to say" | 
+#     gender == "PREFER NOT TO SAY")  {
   
-  q6_nosay <- candy_long_q6 %>% 
+#  q6_nosay <- candy_long_q6 %>% 
     
-  group_by(name) %>% 
+#  group_by(name) %>% 
   
-  summarise(total_joy_nosay = sum(value_numeric, na.rm = TRUE)) %>% 
+#  summarise(total_joy_nosay = sum(value_numeric, na.rm = TRUE)) %>% 
   
-  arrange(desc(total_joy_nosay)) 
+#  arrange(desc(total_joy_nosay)) 
   
-  return(slice_max(nosay_favourite, order_by = "q6_nosay", n = 1))
+#  return(slice_max(nosay_favourite, order_by = "q6_nosay", n = 1))
   
-  }
+#  }
   
-  if(gender == "na" | gender == "Na" | gender == "NA")  {
+#  if(gender == "na" | gender == "Na" | gender == "NA")  {
   
-  q6_na <- candy_long_q6 %>% 
+#  q6_na <- candy_long_q6 %>% 
     
-  group_by(name) %>% 
+#  group_by(name) %>% 
   
-  summarise(total_joy_na = sum(value_numeric, na.rm = TRUE)) %>% 
+#  summarise(total_joy_na = sum(value_numeric, na.rm = TRUE)) %>% 
   
-  arrange(desc(total_joy_na)) 
+#  arrange(desc(total_joy_na)) 
   
-  return(slice_max(na_favourite, order_by = "q6_male", n = 1))
+#  return(slice_max(na_favourite, order_by = "q6_male", n = 1))
   
-  } 
+#  } 
   
-}
+#}
 ```  
 
 
 Do some testing on the function;
 
 ```{r}
-test_that("incorrect input returns an error", {
-  expect_error(gender_joy("1999AD"))
-  expect_error(gender_joy(1234))
-  expect_error(gender_joy(TRUE))
-  expect_error(gender_joy("[a-zA-Z]"))
-})
+#test_that("incorrect input returns an error", {
+#  expect_error(gender_joy("1999AD"))
+#  expect_error(gender_joy(1234))
+#  expect_error(gender_joy(TRUE))
+#  expect_error(gender_joy("[a-zA-Z]"))
+#})
 ```
 
 ```{r}
-#attempt to streamline;
+#attempt to streamline the above function; couldn't get a return and ran out of time to figure it out.
 
-#gender_joy <- function(choose_gender) {
+# gender_joy <- function(choose_gender) {
   
 #   if(!is.character(choose_gender)) { # control non-character entries
 #    stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'prefer not to say' or 'na'!")  
 #   }
-   
+ 
 #   if(choose_gender != "male" & choose_gender != "Male" & choose_gender != "MALE" &
 #      choose_gender != "female" & choose_gender != "Female" & choose_gender != "FEMALE" &
 #      choose_gender != "other" & choose_gender != "Other" & choose_gender != "OTHER" &
@@ -621,23 +621,23 @@ test_that("incorrect input returns an error", {
 #      choose_gender != "Prefer not to say" & 
 #      choose_gender != "PREFER NOT TO SAY")     {
 #     stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'prefer not to say' or 'na'!")
-     
+   
 #    } else {
-  
+
 #  q6_joy <- candy_long_q6 %>% 
-    
+  
 #  select(gender, name, value_numeric) %>% 
-      
+    
 #  filter(gender == choose_gender) %>%
-    
+  
 #  group_by(name) %>% 
-  
-#  summarise(total_joy = sum(as.integer(value_numeric))) %>% 
-  
+
+#  summarise(total_joy = sum(value_numeric, na.rm = TRUE)) %>% 
+
 #  arrange(desc(total_joy)) 
-  
+
 #  return(slice_max(q6_joy, order_by = "total_joy", n = 2))
-    
+  
 #     }
 #  }
 ```
@@ -651,10 +651,6 @@ test_that("incorrect input returns an error", {
 #  expect_error(gender_joy("[a-zA-Z]"))
 #})
 ```
-
-
-
-
 
 
 ## 7. What was the most popular candy bar in each year?
@@ -707,7 +703,7 @@ candy_long_2017 <- candy_long_q6 %>%
 slice_max(candy_long_2017, order_by = "value_numeric", n = 1)
 ```
 
-#### So the most popular sweets by year are;
+#### 7. So the most popular sweets by year are;
 
 **2015:**   reese's peanut butter cups	   4375 votes
 
@@ -890,7 +886,7 @@ the number of imperfectly tidied country names is a very small fraction of the o
 results by a great deal.
 
 
-#### So our result by country is as follows;
+#### 8. So our result by country is as follows;
 
 **USA:**    reese's peanut butter cups	        1973 votes
 

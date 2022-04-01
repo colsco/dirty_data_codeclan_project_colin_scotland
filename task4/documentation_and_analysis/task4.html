@@ -201,7 +201,8 @@ pre code {
 <li>What was the most popular candy bar in each year?</li>
 <li>What was the most popular candy bar by this rating for people in US, Canada, UK, and all other countries?</li>
 </ol>
-<p>A function <code>gender_joy()</code> was written in an attempt to streamline the code for question 6, and although it performed perfectly well, the coding for the function ended up being longer than the coding for the original analysis and didn’t provide any real advantage.</p>
+<p>A function <code>gender_joy()</code> was written in an attempt to streamline the code for question 6, and although the first attempt performed perfectly well, the coding for the function ended up being longer than the coding for the original analysis and didn’t provide any real advantage.</p>
+<p>Shortening the function worked up to a point, but isn’t returning expected results at the time of submission to Github.</p>
 <p>Set up libraries;</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
@@ -279,7 +280,7 @@ candy_long_ratings</code></pre>
 ##           &lt;int&gt;
 ## 1        603883</code></pre>
 <div id="there-are-603883-ratings-of-sweets-across-the-three-years." class="section level4">
-<h4>There are <strong>603883</strong> ratings of sweets across the three years.</h4>
+<h4>1. There are <strong>603883</strong> ratings of sweets across the three years.</h4>
 <p>These can also be broken down further to show how many of each type there were;</p>
 <pre class="r"><code>candy_long %&gt;% 
   
@@ -377,7 +378,7 @@ candy_all %&gt;%
 ##         &lt;dbl&gt;
 ## 1        35.1</code></pre>
 <div id="so-the-average-age-of-people-going-out-trick-or-treating-is-just-over-35-years." class="section level4">
-<h4>So the average age of people going out trick or treating is just over <strong>35 years</strong>.</h4>
+<h4>2. So the average age of people going out trick or treating is just over <strong>35 years</strong>.</h4>
 </div>
 </div>
 <div id="what-was-the-average-age-of-people-not-going-trick-or-treating" class="section level2">
@@ -393,7 +394,7 @@ candy_all %&gt;%
 ##         &lt;dbl&gt;
 ## 1        39.2</code></pre>
 <div id="the-average-age-of-people-going-out-trick-or-treating-is-just-over-39-years." class="section level4">
-<h4>The average age of people going out trick or treating is just over <strong>39 years</strong>.</h4>
+<h4>3. The average age of people going out trick or treating is just over <strong>39 years</strong>.</h4>
 </div>
 </div>
 <div id="for-each-joy-despair-and-meh-which-candy-bar-received-the-most-of-these-ratings" class="section level2">
@@ -473,7 +474,7 @@ candy_all %&gt;%
 ## 10     0     0 sweetums                                                     5050
 ## # ... with 355 more rows</code></pre>
 <div id="the-candy-bar-with-the-most-ratings-of-each-kind-were" class="section level4">
-<h4>The candy bar with the most ratings of each kind were;</h4>
+<h4>4. The candy bar with the most ratings of each kind were;</h4>
 <p><strong>JOY</strong>: Any reese’s peanut butter cups 7369 votes</p>
 <p><strong>MEH</strong>: Lollipops 1570 votes</p>
 <p><strong>DESPAIR</strong>: Gum from baseball cards 7341 votes</p>
@@ -494,7 +495,7 @@ filter(name == &quot;starburst&quot; &amp; all_the_despair &gt; 0)</code></pre>
 ##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;               &lt;int&gt;
 ## 1     0     0 starburst            1990</code></pre>
 <div id="there-were-1990-votes-of-despair-for-starburst." class="section level4">
-<h4>There were <strong>1990 votes of ‘despair’</strong> for Starburst.</h4>
+<h4>5. There were <strong>1990 votes of ‘despair’</strong> for Starburst.</h4>
 </div>
 </div>
 <div id="what-was-the-most-popular-candy-bar-by-this-rating-system-for-each-gender-in-the-data-set" class="section level2">
@@ -607,8 +608,8 @@ na_favourite &lt;- candy_long_q1 %&gt;%
 ##   name                       total_joy_na
 ##   &lt;chr&gt;                             &lt;int&gt;
 ## 1 reese_s_peanut_butter_cups         4890</code></pre>
-<div id="so-the-most-popular-sweets-by-gender-are" class="section level4">
-<h4>So the most popular sweets by gender are;</h4>
+<div id="i.-so-the-most-popular-sweets-by-gender-are" class="section level4">
+<h4>6(i). So the most popular sweets by gender are;</h4>
 <p><strong>Male:</strong> reese’s peanut butter cups 1545 votes</p>
 <p><strong>Female: </strong> reese’s peanut butter cups 837 votes</p>
 <p><strong>Other: </strong> kit kat 34 votes</p>
@@ -719,8 +720,8 @@ q6_na &lt;- candy_long_q6 %&gt;%
 ## 1 reese_s_peanut_butter_cups         4890</code></pre>
 </div>
 </div>
-<div id="so-the-most-popular-sweets-by-gender-using-the-proper-system-are" class="section level4">
-<h4>So the most popular sweets by gender using the <em>proper</em> system are;</h4>
+<div id="ii.-so-the-most-popular-sweets-by-gender-using-the-proper-system-are" class="section level4">
+<h4>6(ii). So the most popular sweets by gender using the <em>proper</em> system are;</h4>
 <p><strong>Male:</strong> reese’s peanut butter cups 1545 votes</p>
 <p><strong>Female: </strong> reese’s peanut butter cups 837 votes</p>
 <p><strong>Other: </strong> kit kat 34 votes</p>
@@ -731,114 +732,113 @@ q6_na &lt;- candy_long_q6 %&gt;%
 <p><em>It felt like there was a lot of repetition in writing the answer to this question,</em> <em>so I tried writing a function that would do the work for me.</em></p>
 <p><em>The function works as expected, - but in this case the function is longer than the</em> <em>original code, so I didn’t gain anything.</em></p>
 <p><em>I tried to streamline the function and just about got there, but can’t get the result</em> <em>to return properly - see below.</em></p>
-<pre class="r"><code># first attempt
+<pre class="r"><code># first attempt at function - wraps above code into a function framework - works ok,  but very verbose!
 
-gender_joy &lt;- function(gender) {
+#gender_joy &lt;- function(gender) {
   
-   if(!is.character(gender)) { # control non-character entries
-    stop(call. = FALSE, &quot;Error in input; select from &#39;male&#39;, &#39;female&#39;, &#39;other&#39;, &#39;prefer not to say&#39; or &#39;na&#39;!&quot;)  
-   }
+#   if(!is.character(gender)) { # control non-character entries
+#    stop(call. = FALSE, &quot;Error in input; select from &#39;male&#39;, &#39;female&#39;, &#39;other&#39;, &#39;prefer not to say&#39; or &#39;na&#39;!&quot;)  
+#   }
    
-   if(gender != &quot;male&quot; &amp; gender != &quot;Male&quot; &amp; gender != &quot;MALE&quot; &amp;
-      gender != &quot;female&quot; &amp; gender != &quot;Female&quot; &amp; gender != &quot;FEMALE&quot; &amp;
-      gender != &quot;other&quot; &amp; gender != &quot;Other&quot; &amp; gender != &quot;OTHER&quot; &amp;
-      gender != &quot;na&quot; &amp; gender != &quot;Na&quot; &amp; gender != &quot;NA&quot; &amp;
-      gender != &quot;prefer not to say&quot; &amp; 
-     gender != &quot;Prefer not to say&quot; &amp; 
-     gender != &quot;PREFER NOT TO SAY&quot;) {
-     stop(call. = FALSE, &quot;Error in input; select from &#39;male&#39;, &#39;female&#39;, &#39;other&#39;, &#39;prefer not to say&#39; or &#39;na&#39;!&quot;)
-     }
+#   if(gender != &quot;male&quot; &amp; gender != &quot;Male&quot; &amp; gender != &quot;MALE&quot; &amp;
+#      gender != &quot;female&quot; &amp; gender != &quot;Female&quot; &amp; gender != &quot;FEMALE&quot; &amp;
+#      gender != &quot;other&quot; &amp; gender != &quot;Other&quot; &amp; gender != &quot;OTHER&quot; &amp;
+#      gender != &quot;na&quot; &amp; gender != &quot;Na&quot; &amp; gender != &quot;NA&quot; &amp;
+#      gender != &quot;prefer not to say&quot; &amp; 
+#     gender != &quot;Prefer not to say&quot; &amp; 
+#     gender != &quot;PREFER NOT TO SAY&quot;) {
+#     stop(call. = FALSE, &quot;Error in input; select from &#39;male&#39;, &#39;female&#39;, &#39;other&#39;, &#39;prefer not to say&#39; or &#39;na&#39;!&quot;)
+#     }
   
   
-  if(gender == &quot;male&quot; | gender == &quot;Male&quot; | gender == &quot;MALE&quot;)  {
+#  if(gender == &quot;male&quot; | gender == &quot;Male&quot; | gender == &quot;MALE&quot;)  {
   
-  q6_male &lt;- candy_long_q6 %&gt;% 
+#  q6_male &lt;- candy_long_q6 %&gt;% 
     
-  group_by(name) %&gt;% 
+#  group_by(name) %&gt;% 
   
-  summarise(total_joy_male = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+#  summarise(total_joy_male = sum(value_numeric, na.rm = TRUE)) %&gt;% 
   
-  arrange(desc(total_joy_male)) 
+#  arrange(desc(total_joy_male)) 
   
-  return(slice_max(male_favourite, order_by = &quot;q6_male&quot;, n = 1))
+#  return(slice_max(male_favourite, order_by = &quot;q6_male&quot;, n = 1))
 
-  }
+#  }
   
-  if(gender == &quot;female&quot; | gender == &quot;Female&quot; | gender == &quot;FEMALE&quot;)  {
+#  if(gender == &quot;female&quot; | gender == &quot;Female&quot; | gender == &quot;FEMALE&quot;)  {
   
-  q6_female &lt;- candy_long_q6 %&gt;% 
+#  q6_female &lt;- candy_long_q6 %&gt;% 
     
-  group_by(name) %&gt;% 
+#  group_by(name) %&gt;% 
   
-  summarise(total_joy_female = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+#  summarise(total_joy_female = sum(value_numeric, na.rm = TRUE)) %&gt;% 
   
-  arrange(desc(total_joy_female)) 
+#  arrange(desc(total_joy_female)) 
   
-  return(slice_max(female_favourite, order_by = &quot;q6_female&quot;, n = 1))
+#  return(slice_max(female_favourite, order_by = &quot;q6_female&quot;, n = 1))
   
-  }
+#  }
   
-  if(gender == &quot;other&quot; | gender == &quot;Other&quot; | gender == &quot;OTHER&quot;)  {
+#  if(gender == &quot;other&quot; | gender == &quot;Other&quot; | gender == &quot;OTHER&quot;)  {
   
-  q6_other &lt;- candy_long_q6 %&gt;% 
+#  q6_other &lt;- candy_long_q6 %&gt;% 
     
-  group_by(name) %&gt;% 
+#  group_by(name) %&gt;% 
   
-  summarise(total_joy_other = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+#  summarise(total_joy_other = sum(value_numeric, na.rm = TRUE)) %&gt;% 
   
-  arrange(desc(total_joy_other)) 
+#  arrange(desc(total_joy_other)) 
   
-  return(slice_max(other_favourite, order_by = &quot;q6_other&quot;, n = 1))
+#  return(slice_max(other_favourite, order_by = &quot;q6_other&quot;, n = 1))
   
-  }
+#  }
   
-  if(gender == &quot;prefer not to say&quot; | 
-     gender == &quot;Prefer not to say&quot; | 
-     gender == &quot;PREFER NOT TO SAY&quot;)  {
+#  if(gender == &quot;prefer not to say&quot; | 
+#     gender == &quot;Prefer not to say&quot; | 
+#     gender == &quot;PREFER NOT TO SAY&quot;)  {
   
-  q6_nosay &lt;- candy_long_q6 %&gt;% 
+#  q6_nosay &lt;- candy_long_q6 %&gt;% 
     
-  group_by(name) %&gt;% 
+#  group_by(name) %&gt;% 
   
-  summarise(total_joy_nosay = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+#  summarise(total_joy_nosay = sum(value_numeric, na.rm = TRUE)) %&gt;% 
   
-  arrange(desc(total_joy_nosay)) 
+#  arrange(desc(total_joy_nosay)) 
   
-  return(slice_max(nosay_favourite, order_by = &quot;q6_nosay&quot;, n = 1))
+#  return(slice_max(nosay_favourite, order_by = &quot;q6_nosay&quot;, n = 1))
   
-  }
+#  }
   
-  if(gender == &quot;na&quot; | gender == &quot;Na&quot; | gender == &quot;NA&quot;)  {
+#  if(gender == &quot;na&quot; | gender == &quot;Na&quot; | gender == &quot;NA&quot;)  {
   
-  q6_na &lt;- candy_long_q6 %&gt;% 
+#  q6_na &lt;- candy_long_q6 %&gt;% 
     
-  group_by(name) %&gt;% 
+#  group_by(name) %&gt;% 
   
-  summarise(total_joy_na = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+#  summarise(total_joy_na = sum(value_numeric, na.rm = TRUE)) %&gt;% 
   
-  arrange(desc(total_joy_na)) 
+#  arrange(desc(total_joy_na)) 
   
-  return(slice_max(na_favourite, order_by = &quot;q6_male&quot;, n = 1))
+#  return(slice_max(na_favourite, order_by = &quot;q6_male&quot;, n = 1))
   
-  } 
+#  } 
   
-}</code></pre>
+#}</code></pre>
 <p>Do some testing on the function;</p>
-<pre class="r"><code>test_that(&quot;incorrect input returns an error&quot;, {
-  expect_error(gender_joy(&quot;1999AD&quot;))
-  expect_error(gender_joy(1234))
-  expect_error(gender_joy(TRUE))
-  expect_error(gender_joy(&quot;[a-zA-Z]&quot;))
-})</code></pre>
-<pre><code>## Test passed</code></pre>
-<pre class="r"><code>#attempt to streamline;
+<pre class="r"><code>#test_that(&quot;incorrect input returns an error&quot;, {
+#  expect_error(gender_joy(&quot;1999AD&quot;))
+#  expect_error(gender_joy(1234))
+#  expect_error(gender_joy(TRUE))
+#  expect_error(gender_joy(&quot;[a-zA-Z]&quot;))
+#})</code></pre>
+<pre class="r"><code>#attempt to streamline the above function; couldn&#39;t get a return and ran out of time to figure it out.
 
-#gender_joy &lt;- function(choose_gender) {
+# gender_joy &lt;- function(choose_gender) {
   
 #   if(!is.character(choose_gender)) { # control non-character entries
 #    stop(call. = FALSE, &quot;Error in input; select from &#39;male&#39;, &#39;female&#39;, &#39;other&#39;, &#39;prefer not to say&#39; or &#39;na&#39;!&quot;)  
 #   }
-   
+ 
 #   if(choose_gender != &quot;male&quot; &amp; choose_gender != &quot;Male&quot; &amp; choose_gender != &quot;MALE&quot; &amp;
 #      choose_gender != &quot;female&quot; &amp; choose_gender != &quot;Female&quot; &amp; choose_gender != &quot;FEMALE&quot; &amp;
 #      choose_gender != &quot;other&quot; &amp; choose_gender != &quot;Other&quot; &amp; choose_gender != &quot;OTHER&quot; &amp;
@@ -847,23 +847,23 @@ gender_joy &lt;- function(gender) {
 #      choose_gender != &quot;Prefer not to say&quot; &amp; 
 #      choose_gender != &quot;PREFER NOT TO SAY&quot;)     {
 #     stop(call. = FALSE, &quot;Error in input; select from &#39;male&#39;, &#39;female&#39;, &#39;other&#39;, &#39;prefer not to say&#39; or &#39;na&#39;!&quot;)
-     
+   
 #    } else {
-  
+
 #  q6_joy &lt;- candy_long_q6 %&gt;% 
-    
+  
 #  select(gender, name, value_numeric) %&gt;% 
-      
+    
 #  filter(gender == choose_gender) %&gt;%
-    
+  
 #  group_by(name) %&gt;% 
-  
-#  summarise(total_joy = sum(as.integer(value_numeric))) %&gt;% 
-  
+
+#  summarise(total_joy = sum(value_numeric, na.rm = TRUE)) %&gt;% 
+
 #  arrange(desc(total_joy)) 
-  
+
 #  return(slice_max(q6_joy, order_by = &quot;total_joy&quot;, n = 2))
-    
+  
 #     }
 #  }</code></pre>
 <pre class="r"><code>#test_that(&quot;incorrect input returns an error&quot;, {
@@ -922,7 +922,7 @@ slice_max(candy_long_2017, order_by = &quot;value_numeric&quot;, n = 1)</code></
 ##   &lt;chr&gt;                         &lt;dbl&gt;
 ## 1 reese_s_peanut_butter_cups     1403</code></pre>
 <div id="so-the-most-popular-sweets-by-year-are" class="section level4">
-<h4>So the most popular sweets by year are;</h4>
+<h4>7. So the most popular sweets by year are;</h4>
 <p><strong>2015:</strong> reese’s peanut butter cups 4375 votes</p>
 <p><strong>2016:</strong> kit kat 920 votes</p>
 <p><strong>2017:</strong> reese’s peanut butter cups 1403 votes</p>
@@ -1097,7 +1097,7 @@ slice_max(candy_country, order_by = &quot;value_numeric&quot;, n = 1)</code></pr
 ## 1 kit_kat        56</code></pre>
 <p>The regex cleaning is not perfect, and even after several attempts still had some small inaccuracies. However, the number of imperfectly tidied country names is a very small fraction of the overall and should not influence the results by a great deal.</p>
 <div id="so-our-result-by-country-is-as-follows" class="section level4">
-<h4>So our result by country is as follows;</h4>
+<h4>8. So our result by country is as follows;</h4>
 <p><strong>USA:</strong> reese’s peanut butter cups 1973 votes</p>
 <p><strong>UK:</strong> lindt truffle / rolos / toblerone 33 votes</p>
 <p><strong>Canada:</strong> kit kat 233 votes</p>
