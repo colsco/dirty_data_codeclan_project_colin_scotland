@@ -2,7 +2,9 @@
 title: "Halloween Sweets Analysis"
 author: "Colin Scotland"
 date: "29/03/2022"
-output: html_document
+output:
+  html_document:
+  theme: yeti
 ---
 
 The cleaning script for this analysis is `halloween_candy_cleaning_script.R`.  This
@@ -49,7 +51,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 Set up libraries;
-```{r}
+```{r, include=FALSE}
 library(tidyverse)
 library(here)
 library(assertr)
@@ -57,19 +59,18 @@ library(testthat)
 ```
 
 Set 'home' directory;
-```{r}
+```{r, include=FALSE}
 here::here()
 ```
 
 Source cleaning script;
 
-```{r}
+```{r, message=FALSE}
 source(here("data_cleaning_scripts/halloween_candy_cleaning_script.R"))
 ```
 
-## 1. What is the total number of candy ratings given across three years.
+# 1. What is the total number of candy ratings given across three years.
 
-### (Number of candy ratings, not the number of raters.  Don't count missing values).
 
 The first thing to do is to pivot the data into a longer form to allow easier analysis;
 
@@ -100,7 +101,7 @@ candy_long_ratings
   
 ```
 
-#### 1. There are **603883** ratings of sweets across the three years.  
+## 1. There are **603883** ratings of sweets across the three years.  
 
 These can also be broken down further to show how many of each type there were;
 
@@ -135,7 +136,7 @@ candy_long_q1 %>%
 Double check the count: 267672 + 260162 + 76049 = **603883**, which matches the original answer.
 
 
-## 2.  What was the average age of people who are going out trick or treating?
+# 2.  What was the average age of people who are going out trick or treating?
 
 As a start it would be good to have the age column formatted as integers;
 ```{r}
@@ -182,9 +183,9 @@ candy_all %>%
   summarise(avg_age_out = mean(age, na.rm = TRUE))
 ```
 
-#### 2. So the average age of people going out trick or treating is just over **35 years**.
+## 2. So the average age of people going out trick or treating is just over **35 years**.
 
-## 3. What was the average age of people **not** going trick or treating?
+# 3. What was the average age of people **not** going trick or treating?
 
 Similarly to the last question;
 
@@ -196,9 +197,9 @@ candy_all %>%
   summarise(avg_age_out = mean(age, na.rm = TRUE))
 ```
 
-#### 3. The average age of people going out trick or treating is just over **39 years**.
+## 3. The average age of people going out trick or treating is just over **39 years**.
 
-## 4. For each joy, despair and meh, which candy bar received the most of these ratings?
+# 4. For each joy, despair and meh, which candy bar received the most of these ratings?
 
 Basically, sum all the "JOY", "MEH" and "DESPAIR" counts for each candy type and return the top scorer;
 
@@ -234,7 +235,7 @@ candy_rating_rates %>%
   
 ```
 
-#### 4. The candy bar with the most ratings of each kind were;
+## 4. The candy bar with the most ratings of each kind were;
 
 
 **JOY**: Any reese's peanut butter cups     7369 votes
@@ -244,7 +245,7 @@ candy_rating_rates %>%
 **DESPAIR**: Gum from baseball cards        7341 votes
 
 
-## 5. How many people rated Starburst as despair?
+# 5. How many people rated Starburst as despair?
 
 Filter on "starburst" and count the "DESPAIR";
 
@@ -256,9 +257,9 @@ select(name, all_the_despair) %>%
 filter(name == "starburst" & all_the_despair > 0)
 ```
 
-#### 5. There were **1990 votes of 'despair'** for Starburst.
+## 5. There were **1990 votes of 'despair'** for Starburst.
 
-## 6. What was the most popular candy bar by this rating system for each gender in the data set?
+# 6. What was the most popular candy bar by this rating system for each gender in the data set?
 
 First, what entries do we have for gender;
 
@@ -360,7 +361,7 @@ slice_max(na_favourite, order_by = "total_joy_na", n = 1)
 
 ```
 
-#### 6(i). So the most popular sweets by gender are;
+## 6(i). So the most popular sweets by gender are;
 
 **Male:**                  reese's peanut butter cups	            1545 votes
 
@@ -471,7 +472,7 @@ slice_max(nosay_favourite, order_by = "q6_nosay", n = 1)
 slice_max(na_favourite, order_by = "q6_na", n = 1)
 ```
 
-#### 6(ii). So the most popular sweets by gender using the *proper* system are;
+## 6(ii). So the most popular sweets by gender using the *proper* system are;
 
 **Male:**                  reese's peanut butter cups	            1545 votes
 
@@ -491,73 +492,81 @@ so at least they're consistent!
 *It felt like there was a lot of repetition in writing the answer to this question,*
 *so I tried writing a function that would do the work for me.*
 
-*The function isn't quite working yet (input formats still to be sorted) and wasn't*
-*100% functional when this project had to be submitted to Github...*
+*The function works, but for some reason gives slightly different counts to the*
+*code above.*
 
 
 ```{r}
-# attempt to streamline the above function; couldn't get a return and ran out of time to figure it out.
+# Streamline q6 into a function;
 
-# gender_joy <- function(choose_gender) {
+ gender_joy <- function(choose_gender) {
   
-#   if(!is.character(choose_gender)) { # control non-character entries
-#    stop(call. = FALSE, "Error in input; select from 'male', 'female', 'other', 'I'd rather not say' or 'na'!")  
-#   }
+if(choose_gender == "male" | choose_gender == "MALE") {choose_gender = "Male"} 
+if(choose_gender == "female" | choose_gender == "FEMALE") {choose_gender = "Female"}
+if(choose_gender == "other" | choose_gender == "OTHER") {choose_gender = "Other"}
+if(choose_gender == "na" | choose_gender == "Na") {choose_gender = "NA"}
+if(choose_gender == "i'd rather not say" | choose_gender == "I'D RATHER NOT SAY" |
+   choose_gender == "id rather not say" | choose_gender == "ID RATHER NOT SAY" |
+   choose_gender == "Id rather not say")  {choose_gender = "I'd rather not say"}
+   
+if(!is.character(choose_gender)) { # control non-character entries
+    stop(call. = FALSE, "select from 'Male', 'Female', 'Other', 'I'd rather not say' or 'NA'!")  
+   }
  
-# if(choose_gender != "male" & choose_gender != "Male" & choose_gender != "MALE" &
-#      choose_gender != "female" & choose_gender != "Female" & choose_gender != "FEMALE" &
-#      choose_gender != "other" & choose_gender != "Other" & choose_gender != "OTHER" &
-#      choose_gender != "na" & choose_gender != "Na" & choose_gender != "NA" &
-#      choose_gender != "I'd rather not say" & 
-#      choose_gender != "i'd rather not say" & 
-#      choose_gender != "I'D RATHER NOT SAY")     {
-#     stop(call. = FALSE, "Error in input; select from 'Male', 'Female', 'Other', 'Prefer not to say' or 'Na'!")
+
+ if(choose_gender != "Male" &
+      choose_gender != "Female" & 
+      choose_gender != "Other" & 
+      choose_gender != "NA" & 
+      choose_gender != "I'd rather not say")       {
+     stop(call. = FALSE, "select from 'Male', 'Female', 'Other', 'I'd rather not say' or 'NA'!")
  
-#    } else {
-#  if(choose_gender != "na" & choose_gender != "Na" & choose_gender != "NA") {
+    } else {
+  if(choose_gender != "NA") {
   
-#  q6_joy <- candy_long_q6 %>% 
+  q6_joy <- candy_long_q6 %>% 
 
-# select(gender, name, value_numeric) %>% 
-  
-#  filter(gender == choose_gender) %>%  
+  filter(gender == choose_gender) %>%  
 
-# group_by(name) %>% 
+  group_by(name) %>% 
     
-#  summarise(total_joy = sum(value_numeric, na.rm = TRUE)) %>% 
+  summarise(total_joy = sum(value_numeric, na.rm = TRUE)) %>% 
 
-#  arrange(desc(total_joy)) 
+  arrange(desc(total_joy)) 
 
-#  return(slice_max(q6_joy, order_by = "total_joy", n = 1))
+  return(head(q6_joy, n = 1))
   
-#  } else {
+  } else {
     
-#  q6_joy <- candy_long_q6 %>% 
+  q6_joy <- candy_long_q6 %>% 
       
-#  filter(is.na(gender)) %>%
+  filter(is.na(gender)) %>%
       
-#  summarise(total_joy = sum(value_numeric, na.rm = TRUE)) %>% 
+  group_by(name) %>% 
+    
+  summarise(total_joy = sum(value_numeric, na.rm = TRUE)) %>% 
 
-#  arrange(desc(total_joy)) 
+  arrange(desc(total_joy)) 
 
-#  return(slice_max(q6_joy, order_by = "total_joy", n = 1))
-#        }
-#    }
-# }
+  return(slice_max(q6_joy, order_by = "total_joy", n = 1))
+        }
+    }
+ }
+
 ```
 
 
 ```{r}
-#test_that("incorrect input returns an error", {
-#  expect_error(gender_joy("1999AD"))
-#  expect_error(gender_joy(1234))
-#  expect_error(gender_joy(TRUE))
-#  expect_error(gender_joy("[a-zA-Z]"))
-#})
+test_that("incorrect input returns an error", {
+  expect_error(gender_joy("1999AD"))
+  expect_error(gender_joy(1234))
+  expect_error(gender_joy(TRUE))
+  expect_error(gender_joy("[a-zA-Z]"))
+})
 ```
 
 
-## 7. What was the most popular candy bar in each year?
+# 7. What was the most popular candy bar in each year?
 
 ```{r}
 
@@ -607,7 +616,7 @@ candy_long_2017 <- candy_long_q6 %>%
 slice_max(candy_long_2017, order_by = "value_numeric", n = 1)
 ```
 
-#### 7. So the most popular sweets by year are;
+## 7. So the most popular sweets by year are;
 
 **2015:**   reese's peanut butter cups	   4375 votes
 
@@ -616,7 +625,7 @@ slice_max(candy_long_2017, order_by = "value_numeric", n = 1)
 **2017:**   reese's peanut butter cups     1403 votes
 
 
-## 8. What was the most popular candy bar by this rating for people in US, Canada,
+# 8. What was the most popular candy bar by this rating for people in US, Canada,
 UK and all other countries?
 
 First thing to do is to clean up the 'country' column;
@@ -790,7 +799,7 @@ the number of imperfectly tidied country names is a very small fraction of the o
 results by a great deal.
 
 
-#### 8. So our result by country is as follows;
+## 8. So our result by country is as follows;
 
 **USA:**    reese's peanut butter cups	        1973 votes
 
@@ -801,4 +810,4 @@ results by a great deal.
 **Other:**  kit kat	                              56 votes	
 
 
-#### Note: a 3-way tie in the UK between lindt truffles, rolos and toblerones.
+## Note: a 3-way tie in the UK between lindt truffles, rolos and toblerones.
