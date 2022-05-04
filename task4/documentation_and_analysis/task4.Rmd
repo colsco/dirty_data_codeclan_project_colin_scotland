@@ -4,7 +4,8 @@ author: "Colin Scotland"
 date: "29/03/2022"
 output:
   html_document:
-  theme: yeti
+    toc: true
+    toc_float: true
 ---
 
 The cleaning script for this analysis is `halloween_candy_cleaning_script.R`.  This
@@ -69,7 +70,7 @@ Source cleaning script;
 source(here("data_cleaning_scripts/halloween_candy_cleaning_script.R"))
 ```
 
-# 1. What is the total number of candy ratings given across three years.
+### 1. What is the total number of candy ratings given across three years.
 
 
 The first thing to do is to pivot the data into a longer form to allow easier analysis;
@@ -101,7 +102,7 @@ candy_long_ratings
   
 ```
 
-## 1. There are **603883** ratings of sweets across the three years.  
+###### There are **603883** ratings of sweets across the three years.  
 
 These can also be broken down further to show how many of each type there were;
 
@@ -136,7 +137,7 @@ candy_long_q1 %>%
 Double check the count: 267672 + 260162 + 76049 = **603883**, which matches the original answer.
 
 
-# 2.  What was the average age of people who are going out trick or treating?
+### 2. What was the average age of people who are going out trick or treating?
 
 As a start it would be good to have the age column formatted as integers;
 ```{r}
@@ -183,9 +184,9 @@ candy_all %>%
   summarise(avg_age_out = mean(age, na.rm = TRUE))
 ```
 
-## 2. So the average age of people going out trick or treating is just over **35 years**.
+###### So the average age of people going out trick or treating is just over **35 years**.
 
-# 3. What was the average age of people **not** going trick or treating?
+### 3. What was the average age of people **not** going trick or treating?
 
 Similarly to the last question;
 
@@ -197,9 +198,9 @@ candy_all %>%
   summarise(avg_age_out = mean(age, na.rm = TRUE))
 ```
 
-## 3. The average age of people going out trick or treating is just over **39 years**.
+###### The average age of people going out trick or treating is just over **39 years**.
 
-# 4. For each joy, despair and meh, which candy bar received the most of these ratings?
+### 4. For each joy, despair and meh, which candy bar received the most of these ratings?
 
 Basically, sum all the "JOY", "MEH" and "DESPAIR" counts for each candy type and return the top scorer;
 
@@ -235,7 +236,7 @@ candy_rating_rates %>%
   
 ```
 
-## 4. The candy bar with the most ratings of each kind were;
+###### The candy bar with the most ratings of each kind were;
 
 
 **JOY**: Any reese's peanut butter cups     7369 votes
@@ -245,7 +246,7 @@ candy_rating_rates %>%
 **DESPAIR**: Gum from baseball cards        7341 votes
 
 
-# 5. How many people rated Starburst as despair?
+### 5. How many people rated Starburst as despair?
 
 Filter on "starburst" and count the "DESPAIR";
 
@@ -257,9 +258,9 @@ select(name, all_the_despair) %>%
 filter(name == "starburst" & all_the_despair > 0)
 ```
 
-## 5. There were **1990 votes of 'despair'** for Starburst.
+###### There were **1990 votes of 'despair'** for Starburst.
 
-# 6. What was the most popular candy bar by this rating system for each gender in the data set?
+### 6. What was the most popular candy bar by this rating system for each gender in the data set?
 
 First, what entries do we have for gender;
 
@@ -361,7 +362,7 @@ slice_max(na_favourite, order_by = "total_joy_na", n = 1)
 
 ```
 
-## 6(i). So the most popular sweets by gender are;
+###### (i) So the most popular sweets by gender are;
 
 **Male:**                  reese's peanut butter cups	            1545 votes
 
@@ -372,6 +373,28 @@ slice_max(na_favourite, order_by = "total_joy_na", n = 1)
 **Prefer not to say:**     reese's peanut butter cups	            69 votes
 
 **NA: **                   reese's peanut butter cups	            4890 votes	    
+
+
+
+--------
+
+##### Recap of results grouping
+
+**RECAP** another way to write this could be:
+
+```{r}
+candy_long %>% 
+  mutate(score = recode(value, "JOY" = 1, "MEH" = 0, "DESPAIR" = -1)) %>% 
+  group_by(gender, name) %>% 
+  summarise(total_score = sum(score, na.rm = TRUE)) %>% 
+  slice_max(total_score)
+```
+**Note:** `slice_max()` will automatically give the results per gender, because 
+the results are already grouped by gender. This isn't immediately obvious if you
+look at the results after the summarise line.
+
+--------
+
 
 
 
@@ -472,7 +495,7 @@ slice_max(nosay_favourite, order_by = "q6_nosay", n = 1)
 slice_max(na_favourite, order_by = "q6_na", n = 1)
 ```
 
-## 6(ii). So the most popular sweets by gender using the *proper* system are;
+###### (ii) So the most popular sweets by gender using the *proper* system are;
 
 **Male:**                  reese's peanut butter cups	            1545 votes
 
@@ -566,7 +589,7 @@ test_that("incorrect input returns an error", {
 ```
 
 
-# 7. What was the most popular candy bar in each year?
+### 7. What was the most popular candy bar in each year?
 
 ```{r}
 
@@ -616,7 +639,7 @@ candy_long_2017 <- candy_long_q6 %>%
 slice_max(candy_long_2017, order_by = "value_numeric", n = 1)
 ```
 
-## 7. So the most popular sweets by year are;
+###### So the most popular sweets by year are;
 
 **2015:**   reese's peanut butter cups	   4375 votes
 
@@ -625,7 +648,7 @@ slice_max(candy_long_2017, order_by = "value_numeric", n = 1)
 **2017:**   reese's peanut butter cups     1403 votes
 
 
-# 8. What was the most popular candy bar by this rating for people in US, Canada,
+### 8. What was the most popular candy bar by this rating for people in US, Canada,
 UK and all other countries?
 
 First thing to do is to clean up the 'country' column;
@@ -799,7 +822,7 @@ the number of imperfectly tidied country names is a very small fraction of the o
 results by a great deal.
 
 
-## 8. So our result by country is as follows;
+###### So our result by country is as follows;
 
 **USA:**    reese's peanut butter cups	        1973 votes
 
@@ -810,4 +833,4 @@ results by a great deal.
 **Other:**  kit kat	                              56 votes	
 
 
-## Note: a 3-way tie in the UK between lindt truffles, rolos and toblerones.
+###### Note: a 3-way tie in the UK between lindt truffles, rolos and toblerones.
